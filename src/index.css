@@ -1,0 +1,416 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* ── CSS Custom Properties (for use in non-Tailwind contexts) ── */
+:root {
+  --theme-main: #050B14; 
+  --theme-mid: #2563EB; 
+  --theme-dark: #00D4FF;
+  --theme-light: #0A1128;
+  
+  --text-main: #FFFFFF;
+  --text-muted: rgba(255, 255, 255, 0.6);
+  
+  --border-custom: rgba(255, 255, 255, 0.1);
+  
+  --font-heading: 'Outfit', sans-serif;
+  --font-body: 'Outfit', sans-serif;
+  --font-mono: 'Space Mono', monospace;
+}
+
+/* ── Global Reset ── */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: auto;
+}
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background-color: #050B14;
+  color: #FFFFFF;
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ── Custom Scrollbar ── */
+::-webkit-scrollbar {
+  width: 6px;
+}
+::-webkit-scrollbar-track {
+  background: #050B14;
+}
+::-webkit-scrollbar-thumb {
+  background: #1E293B;
+  border-radius: 3px;
+}
+::-webkit-scrollbar-thumb:hover {
+  background: #2563EB;
+}
+
+/* ── Selection ── */
+::selection {
+  background: #00D4FF;
+  color: #050B14;
+}
+
+/* ── Headings ── */
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Outfit', sans-serif;
+}
+
+/* ── Links ── */
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+/* ── Custom Cursor ── */
+.custom-cursor {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #00D4FF;
+  mix-blend-mode: screen;
+  pointer-events: none;
+  z-index: 9999;
+  transform: translate(-50%, -50%);
+}
+
+.cursor-glow {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(0, 212, 255, 0.4) 0%, transparent 70%);
+  pointer-events: none;
+  z-index: 9998;
+  transform: translate(-50%, -50%);
+}
+
+/* ── Noise Overlay ── */
+.bg-noise {
+  position: absolute;
+  inset: 0;
+  background-image: url('data:image/svg+xml,%3Csvg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg"%3E%3Cfilter id="noiseFilter"%3E%3CfeTurbulence type="fractalNoise" baseFrequency="0.8" numOctaves="3" stitchTiles="stitch"/%3E%3C/filter%3E%3Crect width="100%25" height="100%25" filter="url(%23noiseFilter)"/%3E%3C/svg%3E');
+  opacity: 0.04;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* ── Glass Effect ── */
+.glass {
+  background: rgba(5, 11, 20, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(30, 41, 59, 0.5);
+}
+
+/* ── Theme Gradient Text ── */
+.gold-gradient-text {
+  background: linear-gradient(135deg, #00D4FF, #2563EB);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ── Card Glow ── */
+.card-glow {
+  position: relative;
+  overflow: hidden;
+}
+.card-glow::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(135deg, transparent, rgba(37, 99, 235, 0.5), transparent);
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  opacity: 0;
+  transition: opacity 0.5s ease;
+}
+.card-glow:hover::before {
+  opacity: 1;
+}
+
+/* ── Section Divider ── */
+.section-divider {
+  width: 60px;
+  height: 2px;
+  background: linear-gradient(90deg, #2563EB, transparent);
+  margin: 0 auto 2rem;
+}
+
+/* ── Magnetic Button ── */
+.magnetic-btn {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1rem 2.5rem;
+  background: linear-gradient(135deg, #00D4FF, #38BDF8);
+  color: #050B14;
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 0.95rem;
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  overflow: hidden;
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+.magnetic-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 10px 40px rgba(0, 212, 255, 0.3);
+}
+.magnetic-btn::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 300%;
+  height: 300%;
+  background: radial-gradient(circle, rgba(255,255,255,0.4) 0%, transparent 60%);
+  transform: translate(-50%, -50%) scale(0);
+  transition: transform 0.5s ease;
+  border-radius: 50%;
+}
+.magnetic-btn:hover::after {
+  transform: translate(-50%, -50%) scale(1);
+}
+
+/* ── Glitch Hover Effect ── */
+.hover-glitch {
+  position: relative;
+  display: inline-block;
+}
+
+.hover-glitch::before,
+.hover-glitch::after {
+  content: attr(data-text);
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  opacity: 0;
+}
+
+.hover-glitch::before {
+  left: 2px;
+  text-shadow: -1px 0 var(--color-theme-dark);
+  background: transparent;
+}
+
+.hover-glitch::after {
+  left: -2px;
+  text-shadow: -1px 0 var(--color-theme-mid);
+  background: transparent;
+}
+
+.hover-glitch:hover::before {
+  opacity: 1;
+  animation: glitch-anim-1 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+.hover-glitch:hover::after {
+  opacity: 1;
+  animation: glitch-anim-2 0.3s cubic-bezier(0.25, 0.46, 0.45, 0.94) both infinite;
+}
+
+@keyframes glitch-anim-1 {
+  0% { clip-path: inset(20% 0 80% 0); transform: translate(-2px, 1px); }
+  20% { clip-path: inset(60% 0 10% 0); transform: translate(2px, -1px); }
+  40% { clip-path: inset(40% 0 50% 0); transform: translate(-2px, 2px); }
+  60% { clip-path: inset(80% 0 5% 0); transform: translate(2px, -2px); }
+  80% { clip-path: inset(10% 0 70% 0); transform: translate(-1px, 1px); }
+  100% { clip-path: inset(30% 0 50% 0); transform: translate(1px, -1px); }
+}
+
+@keyframes glitch-anim-2 {
+  0% { clip-path: inset(10% 0 60% 0); transform: translate(2px, -1px); }
+  20% { clip-path: inset(30% 0 20% 0); transform: translate(-2px, 2px); }
+  40% { clip-path: inset(70% 0 10% 0); transform: translate(2px, -2px); }
+  60% { clip-path: inset(20% 0 50% 0); transform: translate(-1px, 1px); }
+  80% { clip-path: inset(50% 0 30% 0); transform: translate(1px, -1px); }
+  100% { clip-path: inset(5% 0 80% 0); transform: translate(-2px, 1px); }
+}
+
+/* ── Scrollbar Hide Utility ── */
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
+}
+.scrollbar-hide {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+/* ── Bento Grid Layout ── */
+.bento-grid {
+  display: grid;
+  gap: 12px;
+  grid-template-columns: repeat(2, 1fr);
+  grid-auto-rows: minmax(140px, auto);
+}
+
+/* Mobile Layout (< 640px) — 2-col compact */
+.bento-hero { grid-column: span 2; grid-row: span 1; order: 1; }
+.bento-mentorship { grid-column: span 1; grid-row: span 1; order: 2; }
+.bento-quote { grid-column: span 1; grid-row: span 1; order: 3; }
+.bento-exam { grid-column: span 1; grid-row: span 1; order: 4; }
+.bento-tracking { grid-column: span 1; grid-row: span 1; order: 5; }
+.bento-clarity { grid-column: span 2; grid-row: span 1; order: 6; }
+.bento-team { display: none; }
+.bento-cta { grid-column: span 2; grid-row: span 1; order: 8; }
+
+/* Tablet Portrait (≥ 640px) — 2-col balanced */
+@media (min-width: 640px) {
+  .bento-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 16px;
+    grid-auto-rows: minmax(180px, auto);
+  }
+  .bento-hero { grid-column: span 2; grid-row: span 1; order: unset; }
+  .bento-mentorship { grid-column: span 1; grid-row: span 1; order: unset; }
+  .bento-quote { grid-column: span 1; grid-row: span 1; order: unset; }
+  .bento-exam { grid-column: span 1; grid-row: span 1; order: unset; }
+  .bento-tracking { grid-column: span 1; grid-row: span 1; order: unset; }
+  .bento-clarity { grid-column: span 1; grid-row: span 1; order: unset; }
+  .bento-team { display: flex; grid-column: span 1; grid-row: span 1; order: unset; }
+  .bento-cta { grid-column: span 2; grid-row: span 1; order: unset; }
+}
+
+/* Tablet Landscape / Small Desktop (≥ 768px) — 3-col */
+@media (min-width: 768px) {
+  .bento-grid {
+    grid-template-columns: repeat(3, 1fr);
+    grid-auto-rows: minmax(180px, auto);
+    gap: 18px;
+  }
+  .bento-hero { grid-column: span 2; grid-row: span 1; }
+  .bento-mentorship { grid-column: span 1; grid-row: span 1; }
+  .bento-quote { grid-column: span 1; grid-row: span 1; }
+  .bento-exam { grid-column: span 1; grid-row: span 1; }
+  .bento-tracking { grid-column: span 1; grid-row: span 1; }
+  .bento-clarity { grid-column: span 1; grid-row: span 1; }
+  .bento-team { grid-column: span 1; grid-row: span 1; }
+  .bento-cta { grid-column: span 1; grid-row: span 1; }
+}
+
+/* Desktop (≥ 1024px) — 4-col full layout */
+@media (min-width: 1024px) {
+  .bento-grid {
+    grid-template-columns: repeat(4, 1fr);
+    grid-auto-rows: minmax(180px, auto);
+    gap: 20px;
+  }
+  .bento-hero { grid-column: span 2; grid-row: span 1; }
+  .bento-mentorship { grid-column: span 1; grid-row: span 1; }
+  .bento-quote { grid-column: span 1; grid-row: span 1; }
+  .bento-exam { grid-column: span 1; grid-row: span 1; }
+  .bento-tracking { grid-column: span 2; grid-row: span 1; }
+  .bento-clarity { grid-column: span 1; grid-row: span 1; }
+  .bento-team { grid-column: span 1; grid-row: span 1; }
+  .bento-cta { grid-column: span 1; grid-row: span 1; }
+}
+
+/* ── Bento Card Base ── */
+.bento-card {
+  --mouse-x: 50%;
+  --mouse-y: 50%;
+}
+
+/* ── Responsive ── */
+@media (max-width: 768px) {
+  .custom-cursor,
+  .cursor-glow {
+    display: none !important;
+  }
+
+  /* Kill backdrop-blur on mobile — too expensive for mobile GPUs */
+  .glass,
+  [class*="backdrop-blur"] {
+    -webkit-backdrop-filter: none !important;
+    backdrop-filter: none !important;
+  }
+
+  /* Disable bento blob animations on mobile */
+  .bento-blob-pulse,
+  .bento-blob-float,
+  .bento-blob-drift {
+    animation: none !important;
+    opacity: 0.2;
+  }
+
+  /* Reduce ticker animation complexity */
+  .ticker-scroll {
+    animation-duration: 30s;
+  }
+}
+
+/* ── GPU Acceleration Hints ── */
+.custom-cursor,
+.cursor-glow {
+  will-change: transform;
+}
+
+/* ── Ticker Band CSS Animation (replaces Framer Motion) ── */
+.ticker-scroll {
+  animation: ticker-scroll 20s linear infinite;
+  will-change: transform;
+}
+
+@keyframes ticker-scroll {
+  from { transform: translateX(0); }
+  to { transform: translateX(-50%); }
+}
+
+/* ── Bento Blob Animations (replaces Framer Motion infinite loops) ── */
+.bento-blob-pulse {
+  animation: bento-pulse 5s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.bento-blob-float {
+  animation: bento-float 6s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+.bento-blob-drift {
+  animation: bento-drift 7s ease-in-out infinite;
+  will-change: transform, opacity;
+}
+
+@keyframes bento-pulse {
+  0%, 100% { transform: scale(1); opacity: 0.2; }
+  50% { transform: scale(1.3); opacity: 0.5; }
+}
+
+@keyframes bento-float {
+  0%, 100% { transform: translateY(0); opacity: 0.3; }
+  50% { transform: translateY(-30px); opacity: 0.6; }
+}
+
+@keyframes bento-drift {
+  0%, 100% { transform: translateX(-15px); opacity: 0.1; }
+  50% { transform: translateX(15px); opacity: 0.4; }
+}
