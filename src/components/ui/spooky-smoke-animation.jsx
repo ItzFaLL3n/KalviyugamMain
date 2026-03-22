@@ -1,13 +1,7 @@
-import React, { useEffect, useRef } from 'react';
+import { useEffect, useRef } from 'react';
 
-// --- FRAGMENT SHADER ---
-const fragmentShaderSource = `#version 300 es
-precision highp float;
-out vec4 O;
-uniform float time;
-uniform vec2 resolution;
-uniform vec3 u_color;
-
+// --- Shared shader body (the smoke math) ---
+const SMOKE_BODY = `
 #define FC gl_FragCoord.xy
 #define R resolution
 #define T (time*2.5+660.)
@@ -29,47 +23,87 @@ void main(){
   col.g-=fbm(uv*1.003+vec2(0,T*.015)+n+.003);
   col.b-=fbm(uv*1.006+vec2(0,T*.015)+n+.006);
 
-  // Intensify the base color mixing and boost the blue channel
   col=mix(col, u_color, dot(col,vec3(.21,.71,.07)) * 1.5);
-  col.b += 0.15; // Make it intrinsically more blue
+  col.b += 0.15;
 
-  col=mix(vec3(.08),col,min(time*.1,1.));
+  col=mix(vec3(.08),col,min(time*.8,1.));
   col=clamp(col,.08,1.);
+`;
+
+// --- WebGL2 shaders ---
+const VERT2 = `#version 300 es
+precision highp float;
+in vec4 position;
+void main(){gl_Position=position;}`;
+
+const FRAG2 = `#version 300 es
+precision highp float;
+out vec4 O;
+uniform float time;
+uniform vec2 resolution;
+uniform vec3 u_color;
+${SMOKE_BODY}
   O=vec4(col,1);
+}`;
+
+// --- WebGL1 shaders (fallback for mobile) ---
+const VERT1 = `
+precision highp float;
+attribute vec4 position;
+void main(){gl_Position=position;}`;
+
+const FRAG1 = `
+precision highp float;
+uniform float time;
+uniform vec2 resolution;
+uniform vec3 u_color;
+${SMOKE_BODY}
+  gl_FragColor=vec4(col,1);
 }`;
 
 // --- RENDERER CLASS ---
 class Renderer {
-  constructor(canvas, fragmentSource) {
-    this.vertexSrc = `#version 300 es
-precision highp float;
-in vec4 position;
-void main(){gl_Position=position;}`;
-    this.vertices = [-1, 1, -1, -1, 1, 1, 1, -1];
-    
+  constructor(canvas) {
     this.canvas = canvas;
-    this.gl = canvas.getContext("webgl2");
     this.program = null;
     this.vs = null;
     this.fs = null;
     this.buffer = null;
-    this.color = [0.145, 0.388, 0.922]; // Default to blue #2563EB
+    this.color = [0.145, 0.388, 0.922];
+    this.gl = null;
 
-    this.setup(fragmentSource);
+    // Try WebGL2 first, fall back to WebGL1
+    const opts = { antialias: false, alpha: false };
+    let gl = canvas.getContext('webgl2', opts);
+    if (gl) {
+      this.gl = gl;
+      this.setup(VERT2, FRAG2);
+    } else {
+      gl = canvas.getContext('webgl', opts) || canvas.getContext('experimental-webgl', opts);
+      if (gl) {
+        this.gl = gl;
+        this.setup(VERT1, FRAG1);
+      } else {
+        console.warn('WebGL not supported');
+        return;
+      }
+    }
     this.init();
   }
-  
-  updateColor(newColor) {
-    this.color = newColor;
-  }
 
-  updateScale() {
-    const parent = this.canvas.parentElement;
-    if (!parent) return;
-    const rect = parent.getBoundingClientRect();
-    this.canvas.width = rect.width;
-    this.canvas.height = rect.height;
-    this.gl.viewport(0, 0, this.canvas.width, this.canvas.height);
+  updateColor(c) { this.color = c; }
+
+  updateScale(scale = 1) {
+    if (!this.gl) return;
+    const wrapper = this.canvas.parentElement;
+    if (!wrapper) return;
+    const w = wrapper.clientWidth || wrapper.offsetWidth || window.innerWidth;
+    const h = wrapper.clientHeight || wrapper.offsetHeight || window.innerHeight;
+    const finalW = Math.round((w || window.innerWidth) * scale);
+    const finalH = Math.round((h || window.innerHeight) * scale);
+    this.canvas.width = finalW;
+    this.canvas.height = finalH;
+    this.gl.viewport(0, 0, finalW, finalH);
   }
 
   compile(shader, source) {
@@ -77,142 +111,140 @@ void main(){gl_Position=position;}`;
     gl.shaderSource(shader, source);
     gl.compileShader(shader);
     if (!gl.getShaderParameter(shader, gl.COMPILE_STATUS)) {
-      console.error("Shader compilation error: " + gl.getShaderInfoLog(shader));
+      console.error('Shader error:', gl.getShaderInfoLog(shader));
     }
   }
 
   reset() {
     const { gl, program, vs, fs } = this;
-    if (!program) return;
+    if (!program || !gl) return;
     if (vs) { gl.detachShader(program, vs); gl.deleteShader(vs); }
     if (fs) { gl.detachShader(program, fs); gl.deleteShader(fs); }
     gl.deleteProgram(program);
     this.program = null;
   }
 
-  setup(fragmentSource) {
+  setup(vertSrc, fragSrc) {
     const gl = this.gl;
     this.vs = gl.createShader(gl.VERTEX_SHADER);
     this.fs = gl.createShader(gl.FRAGMENT_SHADER);
     const program = gl.createProgram();
     if (!this.vs || !this.fs || !program) return;
-    this.compile(this.vs, this.vertexSrc);
-    this.compile(this.fs, fragmentSource);
+    this.compile(this.vs, vertSrc);
+    this.compile(this.fs, fragSrc);
     this.program = program;
-    gl.attachShader(this.program, this.vs);
-    gl.attachShader(this.program, this.fs);
-    gl.linkProgram(this.program);
-    if (!gl.getProgramParameter(this.program, gl.LINK_STATUS)) {
-      console.error("Program linking error: " + gl.getProgramInfoLog(this.program));
+    gl.attachShader(program, this.vs);
+    gl.attachShader(program, this.fs);
+    gl.linkProgram(program);
+    if (!gl.getProgramParameter(program, gl.LINK_STATUS)) {
+      console.error('Link error:', gl.getProgramInfoLog(program));
     }
   }
 
   init() {
     const { gl, program } = this;
-    if (!program) return;
+    if (!program || !gl) return;
     this.buffer = gl.createBuffer();
     gl.bindBuffer(gl.ARRAY_BUFFER, this.buffer);
-    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array(this.vertices), gl.STATIC_DRAW);
-    const position = gl.getAttribLocation(program, "position");
-    gl.enableVertexAttribArray(position);
-    gl.vertexAttribPointer(position, 2, gl.FLOAT, false, 0, 0);
-    Object.assign(program, {
-      resolution: gl.getUniformLocation(program, "resolution"),
-      time: gl.getUniformLocation(program, "time"),
-      u_color: gl.getUniformLocation(program, "u_color"),
-    });
+    gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([-1, 1, -1, -1, 1, 1, 1, -1]), gl.STATIC_DRAW);
+    const pos = gl.getAttribLocation(program, 'position');
+    gl.enableVertexAttribArray(pos);
+    gl.vertexAttribPointer(pos, 2, gl.FLOAT, false, 0, 0);
+    program._resolution = gl.getUniformLocation(program, 'resolution');
+    program._time = gl.getUniformLocation(program, 'time');
+    program._color = gl.getUniformLocation(program, 'u_color');
   }
 
   render(now = 0) {
     const { gl, program, buffer, canvas } = this;
-    if (!program || !gl.isProgram(program)) return;
+    if (!program || !gl) return;
     gl.clearColor(0, 0, 0, 1);
     gl.clear(gl.COLOR_BUFFER_BIT);
     gl.useProgram(program);
     gl.bindBuffer(gl.ARRAY_BUFFER, buffer);
-    gl.uniform2f(program.resolution, canvas.width, canvas.height);
-    gl.uniform1f(program.time, now * 1e-3);
-    gl.uniform3fv(program.u_color, this.color);
+    gl.uniform2f(program._resolution, canvas.width, canvas.height);
+    gl.uniform1f(program._time, now * 1e-3);
+    gl.uniform3fv(program._color, this.color);
     gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
   }
 }
 
 const hexToRgb = (hex) => {
-    const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
-    return result
-      ? [
-          parseInt(result[1], 16) / 255,
-          parseInt(result[2], 16) / 255,
-          parseInt(result[3], 16) / 255,
-        ]
-      : null;
+  const r = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex);
+  return r ? [parseInt(r[1], 16) / 255, parseInt(r[2], 16) / 255, parseInt(r[3], 16) / 255] : null;
 };
 
+// Detect mobile once
+const isMobile = typeof window !== 'undefined' &&
+  ('ontouchstart' in window || navigator.maxTouchPoints > 0 || window.innerWidth <= 768);
+
 // --- REACT COMPONENT ---
-export const SmokeBackground = ({ smokeColor = "#2563EB" }) => {
-    const canvasRef = useRef(null);
-    const rendererRef = useRef(null);
-    const [isMobile, setIsMobile] = React.useState(false);
+export const SmokeBackground = ({ smokeColor = '#2563EB' }) => {
+  const wrapperRef = useRef(null);
+  const canvasRef = useRef(null);
+  const rendererRef = useRef(null);
 
-    // Detect mobile on mount
-    useEffect(() => {
-        const checkMobile = () => {
-            const touch = 'ontouchstart' in window || navigator.maxTouchPoints > 0;
-            const narrow = window.innerWidth <= 768;
-            setIsMobile(touch || narrow);
-        };
-        checkMobile();
-        // No resize listener needed — initial check is enough
-    }, []);
+  useEffect(() => {
+    if (!canvasRef.current || !wrapperRef.current) return;
+    const renderer = new Renderer(canvasRef.current);
+    if (!renderer.gl) return;
+    rendererRef.current = renderer;
 
-    // WebGL only on desktop
-    useEffect(() => {
-        if (isMobile || !canvasRef.current) return;
-        const canvas = canvasRef.current;
-        const renderer = new Renderer(canvas, fragmentShaderSource);
-        rendererRef.current = renderer;
-        
-        const handleResize = () => renderer.updateScale();
-        handleResize();
-        window.addEventListener('resize', handleResize);
-        
-        let animationFrameId;
-        const loop = (now) => {
-            renderer.render(now);
-            animationFrameId = requestAnimationFrame(loop);
-        };
-        loop(0);
+    // Mobile: render at 50% res (smoke is blurry, looks identical upscaled)
+    // Desktop: full resolution
+    const scale = isMobile ? 0.5 : 1;
 
-        return () => {
-            window.removeEventListener('resize', handleResize);
-            cancelAnimationFrame(animationFrameId);
-            renderer.reset(); 
-        };
-    }, [isMobile]);
-    
-    useEffect(() => {
-        const renderer = rendererRef.current;
-        if (renderer) {
-            const rgbColor = hexToRgb(smokeColor);
-            if (rgbColor) {
-                renderer.updateColor(rgbColor);
-            }
+    const handleResize = () => renderer.updateScale(scale);
+    requestAnimationFrame(() => handleResize());
+    window.addEventListener('resize', handleResize);
+
+    // --- Visibility-based rendering ---
+    // Only render when the smoke section is visible on screen
+    let raf;
+    let isVisible = true;
+    let lastFrame = 0;
+    // Mobile: cap at 30fps to free up GPU for scroll
+    const minInterval = isMobile ? 33 : 0;
+
+    const loop = (now) => {
+      if (isVisible) {
+        if (now - lastFrame >= minInterval) {
+          renderer.render(now);
+          lastFrame = now;
         }
-    }, [smokeColor]);
+      }
+      raf = requestAnimationFrame(loop);
+    };
+    requestAnimationFrame(() => loop(0));
 
-    // Mobile: lightweight CSS gradient fallback
-    if (isMobile) {
-        return (
-            <div
-                className="w-full h-full"
-                style={{
-                    background: `radial-gradient(ellipse at 30% 50%, ${smokeColor}22 0%, transparent 60%), radial-gradient(ellipse at 70% 30%, ${smokeColor}18 0%, transparent 50%), linear-gradient(180deg, #050B14 0%, #0A1128 50%, #050B14 100%)`,
-                }}
-            />
-        );
-    }
-
-    return (
-        <canvas ref={canvasRef} className="w-full h-full block" />
+    // IntersectionObserver: pause rendering when scrolled off-screen
+    const observer = new IntersectionObserver(
+      ([entry]) => { isVisible = entry.isIntersecting; },
+      { threshold: 0 }
     );
+    observer.observe(wrapperRef.current);
+
+    return () => {
+      window.removeEventListener('resize', handleResize);
+      cancelAnimationFrame(raf);
+      observer.disconnect();
+      renderer.reset();
+    };
+  }, []);
+
+  useEffect(() => {
+    if (rendererRef.current) {
+      const rgb = hexToRgb(smokeColor);
+      if (rgb) rendererRef.current.updateColor(rgb);
+    }
+  }, [smokeColor]);
+
+  return (
+    <div ref={wrapperRef} style={{ position: 'absolute', top: 0, left: 0, right: 0, bottom: 0, width: '100%', height: '100%' }}>
+      <canvas
+        ref={canvasRef}
+        style={{ display: 'block', width: '100%', height: '100%' }}
+      />
+    </div>
+  );
 };
