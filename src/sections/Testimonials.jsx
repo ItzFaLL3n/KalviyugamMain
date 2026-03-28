@@ -5,44 +5,44 @@ import { SmokeBackground } from '../components/ui/spooky-smoke-animation';
 
 const testimonials = [
   {
-    name: 'Arun Prakash',
-    course: 'NEET Coaching',
-    result: 'Scored 680/720 in NEET',
-    quote: 'KALVIYUGAM didn\'t just teach me biology and chemistry — they taught me how to think under pressure. My mentors knew exactly where I was weak and built an entire revision plan around it.',
-    avatar: 'https://i.pravatar.cc/150?u=arunP',
-    tags: ['NEET', 'Mentorship', 'Mock Exams']
+    name: 'Karthikeyan Subramani',
+    course: 'NEET Repeater Batch',
+    result: 'Scored 685/720 in NEET',
+    quote: 'I missed the cutoff in my first attempt, but Kalviyugam Academy changed my entire approach. The intensive daily mock tests and personalized doubt-clearing sessions gave me the confidence to succeed. Their biology faculty is truly outstanding.',
+    avatar: '/images/avatars/karthikeyan.png',
+    tags: ['NEET', 'Repeater', 'Mock Exams']
   },
   {
-    name: 'Meera Subramani',
-    course: 'Board Excellence (10th)',
-    result: 'State rank holder — 498/500',
-    quote: 'I walked in as an average student and walked out as a state ranker. The small batch sizes meant my teachers noticed things even I didn\'t notice about my learning patterns.',
-    avatar: 'https://i.pravatar.cc/150?u=meeraS',
-    tags: ['State Rank', '10th Board', 'Small Batch']
+    name: 'Aishwarya Lakshmi',
+    course: 'Higher Secondary (+2) & JEE',
+    result: 'State Top 10 & Cleared JEE',
+    quote: 'The teachers at Kalviyugam didn\'t just force me to memorize physics formulas; they made me visualize the concepts. That foundational clarity is exactly why I could tackle the toughest JEE problems without panicking.',
+    avatar: '/images/avatars/aishwarya.png',
+    tags: ['JEE Mains', 'State Rank', 'Concept Focus']
   },
   {
-    name: 'Karthik Rajan',
-    course: 'Higher Secondary (+2)',
-    result: 'Topped +2 exams, cracked JEE',
-    quote: 'The concept-first approach changed everything for me. Instead of memorizing formulas, I understood the physics behind them. That made JEE problems feel like puzzles, not threats.',
-    avatar: 'https://i.pravatar.cc/150?u=karthikR',
-    tags: ['JEE Mains', 'Concept First', 'Physics']
+    name: 'Surya Narayanan',
+    course: '10th Board Excellence',
+    result: 'Perfect 500/500 Marks',
+    quote: 'The transition to 10th grade was intimidating, but the small batch sizes here meant I received incredible individual attention. They mapped out an exact study schedule that was completely stress-free yet highly effective.',
+    avatar: '/images/avatars/surya.png',
+    tags: ['10th Board', 'Mentorship', 'Small Batch']
   },
   {
-    name: 'Priya Sharma',
-    course: 'Foundation Course (8th-9th)',
-    result: '100% in Math Olympiad',
-    quote: 'Starting early with Kalviyugam gave me a massive headstart. The curriculum doesn\'t just prepare you for school, it builds a foundation for competitive exams effortlessly.',
-    avatar: 'https://i.pravatar.cc/150?u=priyaS',
-    tags: ['Olympiad', 'Foundation', 'Maths']
+    name: 'Sanjay Krishnan',
+    course: 'NEET Foundation (11th & 12th)',
+    result: '1st Attempt Medical Seat',
+    quote: 'Balancing state board exams and NEET prep seemed impossible until I joined here. Their integrated curriculum perfectly aligns the state syllabus with competitive exam patterns. It saved me countless hours of duplicate studying.',
+    avatar: '/images/avatars/sanjay.png',
+    tags: ['Foundation', 'Time Management', 'NEET']
   },
   {
-    name: 'Rahul Verma',
-    course: 'NEET Dropper Batch',
-    result: 'Improved block from 450 to 690',
-    quote: 'Taking a drop year was the toughest decision, but the dedicated repeater track made all the difference. The personalized analytics helped me focus exactly on my weak areas.',
-    avatar: 'https://i.pravatar.cc/150?u=rahulV',
-    tags: ['NEET', 'Dropper Batch', 'Analytics']
+    name: 'Divya Bharathi',
+    course: 'Intensive Crash Course',
+    result: 'Top Tier Engineering Admission',
+    quote: 'I attended their 3-month intensive crash course. The analytics dashboard they provided to track my weak spots was a literal game changer. I knew exactly which specific chapters to revise instead of blindly reading every textbook.',
+    avatar: '/images/avatars/divya.png',
+    tags: ['Crash Course', 'Analytics', 'Targeted Prep']
   }
 ];
 

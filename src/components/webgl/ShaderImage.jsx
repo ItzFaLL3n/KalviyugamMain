@@ -20,12 +20,10 @@ void main() {
     
     vec4 tex = texture2D(uTexture, displaced);
     
-    // Convert to high-contrast cinematic grayscale/gold based on hover
-    float gray = dot(tex.rgb, vec3(0.299, 0.587, 0.114));
-    vec3 cinematicGray = vec3(gray) * vec3(0.9, 0.9, 0.95);
-    vec3 goldTint = mix(cinematicGray, tex.rgb * vec3(1.2, 1.0, 0.6), uHover * 0.5);
+    // Mix full color with a slight brightness boost on hover
+    vec3 color = mix(tex.rgb, tex.rgb * vec3(1.1, 1.1, 1.15), uHover * 0.5);
     
-    gl_FragColor = vec4(goldTint, tex.a);
+    gl_FragColor = vec4(color, tex.a);
 }
 `;
 

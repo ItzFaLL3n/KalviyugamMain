@@ -24,15 +24,21 @@ export default function Navbar() {
 
   // Sync active state with route
   useEffect(() => {
-    setMobileOpen(false);
-    const hash = window.location.hash;
-    const path = location.pathname;
-    
-    if (path === '/' && !hash) setActiveIndex(0);
-    else if (hash === '#courses') setActiveIndex(1);
-    else if (hash === '#why-us') setActiveIndex(2);
-    else if (hash === '#testimonials') setActiveIndex(3);
-    else if (path === '/gallery') setActiveIndex(4);
+    const syncNav = () => {
+      setMobileOpen(false);
+      const hash = window.location.hash;
+      const path = location.pathname;
+      
+      if (path === '/' && (!hash || hash === '#hero')) setActiveIndex(0);
+      else if (hash === '#courses') setActiveIndex(1);
+      else if (hash === '#why-us') setActiveIndex(2);
+      else if (hash === '#testimonials') setActiveIndex(3);
+      else if (path === '/gallery') setActiveIndex(4);
+    };
+
+    syncNav();
+    window.addEventListener('popstate', syncNav);
+    return () => window.removeEventListener('popstate', syncNav);
   }, [location.pathname, window.location.hash]);
 
   const handleHomeClick = (e) => {
