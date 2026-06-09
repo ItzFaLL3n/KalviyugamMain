@@ -89,18 +89,18 @@ export default function Gallery() {
           initial={{ opacity: 0, y: 20 }}
           animate={isInView ? { opacity: 1, y: 0 } : {}}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="flex flex-wrap justify-start gap-4 mb-16"
+          className="flex flex-wrap justify-center md:justify-start gap-2 md:gap-4 mb-12 md:mb-16 w-full"
         >
           {categories.map((cat) => (
             <button
               key={cat}
               onClick={() => setFilter(cat)}
-              className={`font-mono text-[10px] md:text-xs uppercase tracking-[0.3em] px-8 py-4 border transition-all duration-300 ${filter === cat
-                  ? 'border-[#00e5ff] text-[#00e5ff] bg-[#00e5ff]/5'
+              className={`font-mono text-[9px] sm:text-[10px] md:text-xs uppercase tracking-[0.15em] sm:tracking-[0.2em] md:tracking-[0.3em] px-4 py-3 sm:px-6 sm:py-3 md:px-8 md:py-4 border transition-all duration-300 flex-1 md:flex-none min-w-[120px] md:min-w-0 flex items-center justify-center ${filter === cat
+                  ? 'border-[#00e5ff] text-[#00e5ff] bg-[#00e5ff]/5 shadow-[0_0_15px_rgba(0,229,255,0.15)]'
                   : 'border-border-custom/30 text-text-muted hover:border-border-custom hover:text-text-main'
                 }`}
             >
-              {cat}
+              <span className="truncate">{cat}</span>
             </button>
           ))}
         </motion.div>

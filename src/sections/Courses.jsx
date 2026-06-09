@@ -79,14 +79,16 @@ function CourseCard({ course, index, isInView, isCarousel }) {
       <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-border-custom/60 md:hidden" aria-hidden="true" />
       <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-border-custom/60 md:hidden" aria-hidden="true" />
 
-      <div className="text-text-muted group-hover:text-theme-dark transition-colors duration-500 mb-8 md:mb-12" aria-hidden="true">
-        {course.icon}
+      <div className="flex justify-between items-start mb-8 md:mb-12">
+        <div className="text-text-muted group-hover:text-theme-dark transition-colors duration-500" aria-hidden="true">
+          {course.icon}
+        </div>
+        <span className="inline-block bg-border-custom text-white text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-sm">
+          {course.grades}
+        </span>
       </div>
 
       <div className="mt-auto">
-        <span className="inline-block text-[10px] font-mono uppercase tracking-[0.2em] font-semibold text-theme-dark border border-theme-dark/30 px-3 py-1 mb-4 rounded-sm">
-          {course.grades}
-        </span>
         <h3 className="text-lg md:text-2xl font-bold md:font-light mb-3 md:mb-4 font-heading text-text-main tracking-wide uppercase">
           {course.title}
         </h3>
@@ -145,7 +147,15 @@ export default function Courses() {
   }, []);
 
   return (
-    <section id="courses" className="py-20 md:py-40 lg:py-56 relative" aria-labelledby="courses-heading">
+    <section id="courses" className="py-20 md:py-40 lg:py-56 relative overflow-hidden" aria-labelledby="courses-heading">
+      {/* Faint diagonal grid overlay */}
+      <div
+        className="absolute inset-0 pointer-events-none opacity-[0.03]"
+        style={{
+          backgroundImage: 'repeating-linear-gradient(135deg, #00D4FF 0px, #00D4FF 1px, transparent 1px, transparent 60px)',
+        }}
+        aria-hidden="true"
+      />
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Terminal Window Container */}

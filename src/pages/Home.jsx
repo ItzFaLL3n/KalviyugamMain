@@ -1,6 +1,8 @@
 import { useEffect } from 'react';
 import Hero from '../sections/Hero';
 import Courses from '../sections/Courses';
+import OurPrograms from '../sections/OurPrograms';
+import WhyWeStandOut from '../sections/WhyWeStandOut';
 import WhyChooseUs from '../sections/WhyChooseUs';
 import Testimonials from '../sections/Testimonials';
 import Contact from '../sections/Contact';
@@ -34,6 +36,8 @@ export default function Home() {
     <main>
       <Hero />
       <Courses />
+      <OurPrograms />
+      <WhyWeStandOut />
       <WhyChooseUs />
       <Testimonials />
       <Contact />

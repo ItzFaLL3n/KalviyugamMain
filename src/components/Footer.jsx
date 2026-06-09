@@ -5,6 +5,8 @@ const footerLinks = [
   { label: 'Home', href: '/' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'Courses', href: '/#courses' },
+  { label: 'Programs', href: '/#programs' },
+  { label: 'Why We Stand Out', href: '/#stand-out' },
   { label: 'Contact', href: '/#contact' },
 ];
 

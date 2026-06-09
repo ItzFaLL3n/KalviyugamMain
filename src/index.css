@@ -414,3 +414,21 @@ a {
   0%, 100% { transform: translateX(-15px); opacity: 0.1; }
   50% { transform: translateX(15px); opacity: 0.4; }
 }
+
+/* ── Program card gentle float (GPU-only: transform) ── */
+.card-float {
+  will-change: transform;
+  animation: card-float 5s ease-in-out infinite;
+}
+
+@keyframes card-float {
+  0%, 100% { transform: translateY(0px); }
+  50%       { transform: translateY(-10px); }
+}
+
+/* Disable on mobile to save GPU */
+@media (max-width: 768px) {
+  .card-float {
+    animation: none;
+  }
+}

@@ -119,7 +119,7 @@ export default function Hero() {
                 transition={{ duration: 0.8, delay: 0.4 }}
                 className="text-sm md:text-lg font-body text-text-muted leading-relaxed text-center"
               >
-                From fundamentals to competitive excellence. Precision coaching for ultimate performance matrices in an uncompromising aesthetic environment.
+                Every day is an opportunity to learn and grow; embrace challenges, ask questions, be curious, and believe in your ability to achieve your goals.
               </motion.p>
 
               <motion.div

@@ -5,6 +5,7 @@ import { motion, AnimatePresence } from 'framer-motion';
 const navLinks = [
   { label: 'Home', href: '/', isRoute: true },
   { label: 'Courses', href: '/#courses', isRoute: false },
+  { label: 'Programs', href: '/#programs', isRoute: false },
   { label: 'Why Us', href: '/#why-us', isRoute: false },
   { label: 'Testimonials', href: '/#testimonials', isRoute: false },
   { label: 'Gallery', href: '/gallery', isRoute: true },
@@ -31,9 +32,10 @@ export default function Navbar() {
       
       if (path === '/' && (!hash || hash === '#hero')) setActiveIndex(0);
       else if (hash === '#courses') setActiveIndex(1);
-      else if (hash === '#why-us') setActiveIndex(2);
-      else if (hash === '#testimonials') setActiveIndex(3);
-      else if (path === '/gallery') setActiveIndex(4);
+      else if (hash === '#programs') setActiveIndex(2);
+      else if (hash === '#why-us') setActiveIndex(3);
+      else if (hash === '#testimonials') setActiveIndex(4);
+      else if (path === '/gallery') setActiveIndex(5);
     };
 
     syncNav();
