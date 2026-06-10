@@ -432,3 +432,13 @@ a {
     animation: none;
   }
 }
+
+@media (prefers-reduced-motion: reduce) {
+  .card-float,
+  .ticker-scroll,
+  .bento-blob-pulse,
+  .bento-blob-float,
+  .bento-blob-drift {
+    animation: none;
+  }
+}
