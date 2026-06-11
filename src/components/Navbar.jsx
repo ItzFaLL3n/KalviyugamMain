@@ -22,6 +22,31 @@ function getActiveIndex(pathname, hash) {
   return 0;
 }
 
+const menuVariants = {
+  hidden: { opacity: 0 },
+  visible: {
+    opacity: 1,
+    transition: {
+      staggerChildren: 0.05,
+      delayChildren: 0.1,
+    },
+  },
+  exit: {
+    opacity: 0,
+    transition: {
+      staggerChildren: 0.03,
+      staggerDirection: -1,
+    },
+  },
+};
+
+const itemVariants = {
+  hidden: { opacity: 0, y: 15 },
+  visible: { opacity: 1, y: 0, transition: { type: 'spring', stiffness: 300, damping: 24 } },
+  exit: { opacity: 0, y: -10, transition: { duration: 0.15 } },
+};
+
+
 export default function Navbar() {
   const [scrolled, setScrolled]       = useState(false);
   const [mobileOpen, setMobileOpen]   = useState(false);
@@ -46,6 +71,18 @@ export default function Navbar() {
     window.addEventListener('popstate', sync);
     return () => window.removeEventListener('popstate', sync);
   }, [location.pathname, location.hash]);
+
+  /* lock body scroll when mobile menu is open */
+  useEffect(() => {
+    if (mobileOpen) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = '';
+    }
+    return () => {
+      document.body.style.overflow = '';
+    };
+  }, [mobileOpen]);
 
   /* click handler — scroll if on home, otherwise let router navigate */
   const handleClick = (e, link, index) => {
@@ -139,7 +176,7 @@ export default function Navbar() {
           <button
             id="mobile-menu-toggle"
             onClick={() => setMobileOpen(v => !v)}
-            className="lg:hidden flex flex-col justify-center gap-[5px] w-10 h-10 z-[120]"
+            className="lg:hidden flex flex-col justify-center items-center gap-[5px] w-10 h-10 z-[120]"
             aria-label="Toggle menu"
           >
             <motion.span animate={mobileOpen ? { rotate: 45, y: 6.5 }    : { rotate: 0, y: 0 }}    transition={{ duration: 0.2 }} className="block w-6 h-[1.5px] bg-white origin-center" />
@@ -153,54 +190,50 @@ export default function Navbar() {
       <AnimatePresence>
         {mobileOpen && (
           <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.18 }}
-            className="fixed inset-0 z-[110] bg-[#050B14]/97 backdrop-blur-xl flex flex-col items-center justify-center gap-2 lg:hidden"
+            variants={menuVariants}
+            initial="hidden"
+            animate="visible"
+            exit="exit"
+            className="fixed inset-0 z-[110] bg-[#050B14]/98 backdrop-blur-xl flex flex-col items-center justify-start pt-28 pb-12 overflow-y-auto gap-2 lg:hidden"
           >
-            <button
-              onClick={() => setMobileOpen(false)}
-              className="absolute top-6 right-6 w-10 h-10 rounded-full border border-white/10 bg-white/5 text-white/70 flex items-center justify-center text-base"
-              aria-label="Close menu"
-            >
-              ✕
-            </button>
-
             {navLinks.map((link, i) => {
               const isActive = i === activeIndex;
-              return link.isRoute ? (
-                <Link
-                  key={link.label}
-                  to={link.href}
-                  onClick={(e) => link.href === '/' ? handleHomeClick(e) : handleClick(e, link, i)}
-                  className={`w-64 text-center py-4 font-mono text-sm uppercase tracking-[0.2em] rounded-xl transition-colors duration-150 ${
-                    isActive ? 'text-theme-dark bg-theme-dark/10' : 'text-white/40 hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                </Link>
-              ) : (
-                <a
-                  key={link.label}
-                  href={link.href}
-                  onClick={(e) => handleClick(e, link, i)}
-                  className={`w-64 text-center py-4 font-mono text-sm uppercase tracking-[0.2em] rounded-xl transition-colors duration-150 ${
-                    isActive ? 'text-theme-dark bg-theme-dark/10' : 'text-white/40 hover:text-white'
-                  }`}
-                >
-                  {link.label}
-                </a>
+              return (
+                <motion.div key={link.label} variants={itemVariants} className="w-full flex justify-center">
+                  {link.isRoute ? (
+                    <Link
+                      to={link.href}
+                      onClick={(e) => link.href === '/' ? handleHomeClick(e) : handleClick(e, link, i)}
+                      className={`w-64 text-center py-4 font-mono text-sm uppercase tracking-[0.2em] rounded-xl transition-colors duration-150 ${
+                        isActive ? 'text-theme-dark bg-theme-dark/10' : 'text-white/40 hover:text-white'
+                      }`}
+                    >
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <a
+                      href={link.href}
+                      onClick={(e) => handleClick(e, link, i)}
+                      className={`w-64 text-center py-4 font-mono text-sm uppercase tracking-[0.2em] rounded-xl transition-colors duration-150 ${
+                        isActive ? 'text-theme-dark bg-theme-dark/10' : 'text-white/40 hover:text-white'
+                      }`}
+                    >
+                      {link.label}
+                    </a>
+                  )}
+                </motion.div>
               );
             })}
 
-            <a
-              href="/#contact"
-              onClick={(e) => handleClick(e, { href: '/#contact', isRoute: false, sectionId: 'contact' }, 6)}
-              className="mt-4 w-64 text-center font-mono text-sm tracking-[0.25em] uppercase px-8 py-4 rounded-full bg-gradient-to-r from-theme-mid to-theme-dark text-white"
-            >
-              Enroll Now
-            </a>
+            <motion.div variants={itemVariants} className="w-full flex justify-center mt-4">
+              <a
+                href="/#contact"
+                onClick={(e) => handleClick(e, { href: '/#contact', isRoute: false, sectionId: 'contact' }, 6)}
+                className="w-64 text-center font-mono text-sm tracking-[0.25em] uppercase px-8 py-4 rounded-full bg-gradient-to-r from-theme-mid to-theme-dark text-white shadow-[0_0_24px_rgba(0,212,255,0.2)] hover:shadow-[0_0_32px_rgba(0,212,255,0.4)] transition-shadow duration-300"
+              >
+                Enroll Now
+              </a>
+            </motion.div>
           </motion.div>
         )}
       </AnimatePresence>
