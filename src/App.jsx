@@ -23,13 +23,13 @@ function AppContent() {
     <>
       <ScrollToTop />
       <CustomCursor />
-      <Navbar />
       <PageTransition>
         <Routes>
           <Route path="/" element={<Home />} />
           <Route path="/gallery" element={<Gallery />} />
         </Routes>
       </PageTransition>
+      <Navbar />
       <Footer />
     </>
   );

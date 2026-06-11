@@ -347,8 +347,7 @@ a {
   }
 
   /* Kill backdrop-blur on mobile — too expensive for mobile GPUs */
-  .glass,
-  [class*="backdrop-blur"] {
+  .glass {
     -webkit-backdrop-filter: none !important;
     backdrop-filter: none !important;
   }
