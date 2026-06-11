@@ -130,7 +130,7 @@ function CourseCard({ course, index, isCarousel }) {
 
       {/* ── Visual top area ── */}
       <div
-        className="relative flex items-center justify-center overflow-hidden h-[180px] md:h-[220px] shrink-0"
+        className="relative flex items-center justify-center overflow-hidden h-[130px] md:h-[150px] shrink-0"
         style={{
           background: course.visualBg,
           backgroundImage: dotGrid,
@@ -140,7 +140,7 @@ function CourseCard({ course, index, isCarousel }) {
         <span
           className="absolute font-heading font-black select-none pointer-events-none leading-none tracking-tighter"
           style={{
-            fontSize: 'clamp(5.5rem, 16vw, 9rem)',
+            fontSize: 'clamp(4.5rem, 12vw, 6.5rem)',
             color: course.numColor,
             bottom: '-0.15em',
             right: '-0.05em',
@@ -152,7 +152,7 @@ function CourseCard({ course, index, isCarousel }) {
 
         {/* Floating tier chip - Moved to top left and scaled up */}
         <div
-          className="absolute top-5 left-5 z-20 flex items-center gap-2.5 rounded-full border border-white/[0.15] px-5 py-2.5 shadow-lg"
+          className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full border border-white/[0.15] px-4 py-1.5 shadow-lg"
           style={{
             background: 'rgba(255,255,255,0.06)',
             backdropFilter: 'blur(12px)',
@@ -160,17 +160,17 @@ function CourseCard({ course, index, isCarousel }) {
           }}
         >
           <span
-            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+            className="w-2 h-2 rounded-full flex-shrink-0"
             style={{ background: course.labelColor, boxShadow: `0 0 10px ${course.labelColor}` }}
           />
-          <span className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] font-bold" style={{ color: course.labelColor }}>
+          <span className="font-mono text-xs uppercase tracking-[0.25em] font-bold" style={{ color: course.labelColor }}>
             {course.title}
           </span>
         </div>
 
         {/* Scarcity badge */}
         {course.scarcity && (
-          <span className="absolute top-5 right-5 z-10 flex items-center gap-1.5 rounded-full border border-red-400/30 bg-red-400/[0.1] px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-red-400 backdrop-blur-md">
+          <span className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-full border border-red-400/30 bg-red-400/[0.1] px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-widest text-red-400 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
             {course.scarcity}
           </span>
@@ -178,8 +178,8 @@ function CourseCard({ course, index, isCarousel }) {
       </div>
 
       {/* ── Text bottom area ── */}
-      <div className="flex flex-col flex-1 px-6 md:px-8 py-8 gap-5">
-        <h3 className="font-heading font-bold text-2xl md:text-3xl text-text-main uppercase tracking-tight leading-tight">
+      <div className="flex flex-col flex-1 px-5 md:px-6 py-5 md:py-6 gap-3.5">
+        <h3 className="font-heading font-bold text-xl md:text-2xl text-text-main uppercase tracking-tight leading-tight">
           {course.grades}
         </h3>
         <p className="font-mono text-[11px] uppercase tracking-widest text-text-muted leading-relaxed">
@@ -187,14 +187,14 @@ function CourseCard({ course, index, isCarousel }) {
         </p>
 
         {/* Feature list */}
-        <ul className="flex-1 mt-3 space-y-1">
+        <ul className="flex-1 mt-1.5 space-y-0.5">
           {course.features.map((feat) => (
             <li
               key={feat}
-              className="flex items-start gap-3 py-2 border-b border-white/[0.05] last:border-0"
+              className="flex items-start gap-2.5 py-1 border-b border-white/[0.05] last:border-0"
             >
               <svg
-                className="w-4 h-4 flex-shrink-0 mt-0.5"
+                className="w-3.5 h-3.5 flex-shrink-0 mt-0.5"
                 style={{ color: course.labelColor }}
                 fill="none"
                 viewBox="0 0 24 24"
@@ -203,13 +203,13 @@ function CourseCard({ course, index, isCarousel }) {
               >
                 <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
               </svg>
-              <span className="text-[14px] text-white/80 leading-snug">{feat}</span>
+              <span className="text-[13px] text-white/80 leading-snug">{feat}</span>
             </li>
           ))}
         </ul>
 
         {/* Subjects tag */}
-        <div className="pt-4 border-t border-white/[0.08] mt-auto">
+        <div className="pt-3 border-t border-white/[0.08] mt-auto">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: course.labelColor }}>
             {course.subjects}
           </span>
@@ -267,7 +267,7 @@ export default function Courses() {
   }, []);
 
   return (
-    <section id="courses" className="py-20 md:py-40 lg:py-56 relative overflow-hidden" aria-labelledby="courses-heading">
+    <section id="courses" className="py-16 md:py-24 lg:py-32 relative overflow-hidden" aria-labelledby="courses-heading">
       {/* Faint diagonal grid overlay */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -279,7 +279,7 @@ export default function Courses() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Terminal Window Container */}
-        <div className="relative border border-border-custom p-5 pb-8 md:p-16 rounded-xl shadow-[0_0_50px_rgba(37,99,235,0.1)] overflow-hidden">
+        <div className="relative border border-border-custom p-5 pb-8 md:p-10 lg:p-12 rounded-xl shadow-[0_0_50px_rgba(37,99,235,0.1)] overflow-hidden">
           {/* Terminal Header Bar */}
           <div className="absolute top-0 left-0 w-full h-8 bg-border-custom/50 flex items-center px-4 gap-2" aria-hidden="true">
             <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
@@ -288,7 +288,7 @@ export default function Courses() {
             <span className="ml-4 font-mono text-[10px] text-text-muted">programs_catalog.exe</span>
           </div>
 
-          <div ref={ref} className="text-left mb-10 md:mb-24 pb-6 md:pb-8 mt-10 md:mt-12 border-b border-border-custom relative z-10">
+          <div ref={ref} className="text-left mb-8 md:mb-14 pb-5 md:pb-6 mt-8 md:mt-10 border-b border-border-custom relative z-10">
             <motion.span
               initial={{ opacity: 0 }}
               animate={isInView ? { opacity: 1 } : {}}
@@ -302,7 +302,7 @@ export default function Courses() {
               initial={{ opacity: 0, y: 30 }}
               animate={isInView ? { opacity: 1, y: 0 } : {}}
               transition={{ duration: 0.8, delay: 0.1 }}
-              className="text-3xl sm:text-5xl lg:text-[7rem] font-bold font-heading tracking-tighter leading-[0.9] text-text-main uppercase"
+              className="text-3xl sm:text-5xl lg:text-[5.5rem] font-bold font-heading tracking-tighter leading-[0.9] text-text-main uppercase"
             >
               <span className="hover-glitch" data-text="COURSES">COURSES</span>{' '}
               <span className="text-text-muted italic font-light block hover-glitch" data-text="FOR EXCELLENCE">FOR EXCELLENCE</span>
@@ -320,7 +320,7 @@ export default function Courses() {
                 <div
                   key={course.title}
                   className="snap-center flex-shrink-0"
-                  style={{ width: 'calc(85vw - 64px)', minHeight: '260px' }}
+                  style={{ width: 'calc(100vw - 64px)', maxWidth: '340px', minHeight: '260px' }}
                 >
                   <CourseCard course={course} index={index} isInView={isInView} isCarousel />
                 </div>
