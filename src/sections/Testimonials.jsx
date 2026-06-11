@@ -159,13 +159,7 @@ export default function Testimonials() {
                   </div>
                 </div>
 
-                {/* Stars Component */}
-                <div className="flex items-center gap-1 mb-6">
-                  {[...Array(5)].map((_, i) => (
-                    <Star key={i} className="w-5 h-5 text-yellow-500 fill-yellow-500" />
-                  ))}
-                  <span className="ml-2 text-text-main font-bold font-mono">5.0</span>
-                </div>
+
 
                 {/* Quote */}
                 <p className="text-text-main font-light leading-relaxed mb-10 text-base md:text-lg">

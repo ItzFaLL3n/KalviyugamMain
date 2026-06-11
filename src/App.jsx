@@ -9,10 +9,12 @@ import Gallery from './pages/Gallery';
 import { useEffect } from 'react';
 
 function ScrollToTop() {
-  const { pathname } = useLocation();
+  const location = useLocation();
   useEffect(() => {
+    // Skip scroll-to-top if we're navigating to a specific section
+    if (location.state?.scrollTo) return;
     window.scrollTo(0, 0);
-  }, [pathname]);
+  }, [location.pathname]);
   return null;
 }
 

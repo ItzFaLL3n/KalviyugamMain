@@ -1,101 +1,221 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
 
+const dotGrid = `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E")`;
+
 const courses = [
   {
-    title: 'Foundation Program',
-    grades: 'Class 6–8',
+    title: 'Foundation',
+    grades: 'Pre-KG to 8th',
+    range: 'PK-8',
+    subjects: 'All Subjects · Hindi Included',
     description: 'Building rock-solid fundamentals that set students apart from the very beginning.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342M6.75 15a.75.75 0 1 0 0-1.5.75.75 0 0 0 0 1.5Zm0 0v-3.675A55.378 55.378 0 0 1 12 8.443m-7.007 11.55A5.981 5.981 0 0 0 6.75 15.75v-1.5" />
-      </svg>
-    ),
+    features: [
+      'All subjects incl. Hindi',
+      'Subject-specific special teaching',
+      'Test-series-only track available',
+    ],
+    scarcity: null,
+    cardBg: 'linear-gradient(145deg, #0a1020, #030814)',
+    visualBg: 'radial-gradient(circle at top left, #121d3a, #080d1a)',
+    numColor: 'rgba(255,255,255,0.06)',
+    labelColor: '#3b82f6', // blue-500
   },
   {
-    title: 'Board Excellence',
+    title: 'Excellence',
     grades: '9th & 10th',
+    range: '9–10',
+    subjects: 'All Subjects · Hindi Included',
     description: 'Systematic preparation engineered for top board exam performance.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M16.5 18.75h-9m9 0a3 3 0 0 1 3 3h-15a3 3 0 0 1 3-3m9 0v-3.375c0-.621-.503-1.125-1.125-1.125h-.871M7.5 18.75v-3.375c0-.621.504-1.125 1.125-1.125h.872m5.007 0H9.497m5.007 0a7.454 7.454 0 0 1-.982-3.172M9.497 14.25a7.454 7.454 0 0 0 .981-3.172M5.25 4.236c-.982.143-1.954.317-2.916.52A6.003 6.003 0 0 0 7.73 9.728M5.25 4.236V4.5c0 2.108.966 3.99 2.48 5.228M5.25 4.236V2.721C7.456 2.41 9.71 2.25 12 2.25c2.291 0 4.545.16 6.75.47v1.516M18.75 4.236c.982.143 1.954.317 2.916.52A6.003 6.003 0 0 0 16.27 9.728M18.75 4.236V4.5c0 2.108-.966 3.99-2.48 5.228m0 0a6.02 6.02 0 0 1-7.54 0" />
-      </svg>
-    ),
+    features: [
+      'All subjects incl. Hindi',
+      'Exam-oriented revision',
+      'Govt. PYQs & sample paper sessions',
+      'Weekly & monthly organised tests',
+      'Weekly doubt-clearing sessions',
+    ],
+    scarcity: null,
+    cardBg: 'linear-gradient(145deg, #08121a, #04090d)',
+    visualBg: 'radial-gradient(circle at top left, #102436, #060e15)',
+    numColor: 'rgba(255,255,255,0.06)',
+    labelColor: '#0ea5e9', // sky-500
   },
   {
-    title: 'Higher Secondary Mastery',
+    title: 'Mastery',
     grades: '+1 & +2',
+    range: '11–12',
+    subjects: 'Science Stream',
     description: 'Deep conceptual mastery for students aiming at elite academic outcomes.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M4.26 10.147a60.438 60.438 0 0 0-.491 6.347A48.62 48.62 0 0 1 12 20.904a48.62 48.62 0 0 1 8.232-4.41 60.46 60.46 0 0 0-.491-6.347m-15.482 0a50.636 50.636 0 0 0-2.658-.813A59.906 59.906 0 0 1 12 3.493a59.903 59.903 0 0 1 10.399 5.84c-.896.248-1.783.52-2.658.814m-15.482 0A50.717 50.717 0 0 1 12 13.489a50.702 50.702 0 0 1 7.74-3.342" />
-      </svg>
-    ),
+    features: [
+      'Deep conceptual learning',
+      'Board Exam coaching',
+      'Practical lab guidance'
+    ],
+    scarcity: 'Only 8 Seats',
+    cardBg: 'linear-gradient(145deg, #0e1116, #07090b)',
+    visualBg: 'radial-gradient(circle at top left, #18202b, #090c10)',
+    numColor: 'rgba(255,255,255,0.06)',
+    labelColor: '#94a3b8', // slate-400
   },
   {
-    title: 'NEET / JEE Coaching',
-    grades: 'Competitive',
+    title: 'Competitive',
+    grades: 'NEET / JEE',
+    range: 'NEET',
+    subjects: 'Physics · Chemistry · Biology/Maths',
     description: "Battle-tested strategies and rigorous practice for India's toughest exams.",
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9.75 3.104v5.714a2.25 2.25 0 0 1-.659 1.591L5 14.5M9.75 3.104c-.251.023-.501.05-.75.082m.75-.082a24.301 24.301 0 0 1 4.5 0m0 0v5.714c0 .597.237 1.17.659 1.591L19.8 15.3M14.25 3.104c.251.023.501.05.75.082M19.8 15.3l-1.57.393A9.065 9.065 0 0 1 12 15a9.065 9.065 0 0 0-6.23.693L5 14.5m14.8.8 1.402 1.402c1.232 1.232.65 3.318-1.067 3.611A48.309 48.309 0 0 1 12 21c-2.773 0-5.491-.235-8.135-.687-1.718-.293-2.3-2.379-1.067-3.61L5 14.5" />
-      </svg>
-    ),
+    features: [
+      'Rigorous mock tests',
+      'Advanced problem solving',
+      'PYQ analysis',
+      'Time management strategies'
+    ],
+    scarcity: null,
+    cardBg: 'linear-gradient(145deg, #110c14, #08060a)',
+    visualBg: 'radial-gradient(circle at top left, #23162b, #0d0810)',
+    numColor: 'rgba(255,255,255,0.06)',
+    labelColor: '#a855f7', // purple-500
   },
   {
-    title: 'Commerce & Accounts',
+    title: 'Commerce',
     grades: 'Commerce Stream',
+    range: 'COM',
+    subjects: 'Accountancy · Economics · Business',
     description: 'Clarity-driven coaching for Accountancy, Economics, and Business Studies.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M3 13.125C3 12.504 3.504 12 4.125 12h2.25c.621 0 1.125.504 1.125 1.125v6.75C7.5 20.496 6.996 21 6.375 21h-2.25A1.125 1.125 0 0 1 3 19.875v-6.75ZM9.75 8.625c0-.621.504-1.125 1.125-1.125h2.25c.621 0 1.125.504 1.125 1.125v11.25c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V8.625ZM16.5 4.125c0-.621.504-1.125 1.125-1.125h2.25C20.496 3 21 3.504 21 4.125v15.75c0 .621-.504 1.125-1.125 1.125h-2.25a1.125 1.125 0 0 1-1.125-1.125V4.125Z" />
-      </svg>
-    ),
+    features: [
+      'Concept clarity',
+      'Case study analysis',
+      'Previous year papers',
+      'Board exam focus'
+    ],
+    scarcity: null,
+    cardBg: 'linear-gradient(145deg, #0a1210, #050908)',
+    visualBg: 'radial-gradient(circle at top left, #112822, #060e0c)',
+    numColor: 'rgba(255,255,255,0.06)',
+    labelColor: '#10b981', // emerald-500
   },
   {
-    title: 'Test Series & Revision',
+    title: 'Revision',
     grades: 'All Batches',
+    range: 'TEST',
+    subjects: 'All Subjects',
     description: 'Intensive mock tests and focused revision cycles to sharpen exam readiness.',
-    icon: (
-      <svg className="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5} aria-hidden="true">
-        <path strokeLinecap="round" strokeLinejoin="round" d="M9 12h3.75M9 15h3.75M9 18h3.75m3 .75H18a2.25 2.25 0 0 0 2.25-2.25V6.108c0-1.135-.845-2.098-1.976-2.192a48.424 48.424 0 0 0-1.123-.08m-5.801 0c-.065.21-.1.433-.1.664 0 .414.336.75.75.75h4.5a.75.75 0 0 0 .75-.75 2.25 2.25 0 0 0-.1-.664m-5.8 0A2.251 2.251 0 0 1 13.5 2.25H15a2.25 2.25 0 0 1 2.15 1.586m-5.8 0c-.376.023-.75.05-1.124.08C9.095 4.01 8.25 4.973 8.25 6.108V8.25m0 0H4.875c-.621 0-1.125.504-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75c.621 0 1.125-.504 1.125-1.125V9.375c0-.621-.504-1.125-1.125-1.125H8.25ZM6.75 12h.008v.008H6.75V12Zm0 3h.008v.008H6.75V15Zm0 3h.008v.008H6.75V18Z" />
-      </svg>
-    ),
+    features: [
+      'Full-length mock exams',
+      'Detailed performance analysis',
+      'Doubt clearing sessions',
+      'Last-minute tips'
+    ],
+    scarcity: null,
+    cardBg: 'linear-gradient(145deg, #120d0a, #090605)',
+    visualBg: 'radial-gradient(circle at top left, #2b1d11, #0d0905)',
+    numColor: 'rgba(255,255,255,0.06)',
+    labelColor: '#f59e0b', // amber-500
   },
 ];
 
 /* ── Course Card (shared between carousel & grid) ── */
-function CourseCard({ course, index, isInView, isCarousel }) {
+function CourseCard({ course, index, isCarousel }) {
   return (
     <motion.article
-      initial={{ opacity: 0, y: 40 }}
-      animate={isInView ? { opacity: 1, y: 0 } : {}}
-      transition={{ duration: 0.7, delay: isCarousel ? 0 : index * 0.1 }}
-      className="group relative p-6 md:p-10 border border-border-custom/50 hover:border-theme-dark transition-colors duration-500 bg-theme-light/30 backdrop-blur-sm rounded-lg flex flex-col h-full"
+      initial={{ opacity: 0, y: 32 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true, margin: '-60px' }}
+      whileHover={{ y: -6 }}
+      transition={{ duration: 0.6, delay: isCarousel ? 0 : index * 0.1, ease: [0.23, 1, 0.32, 1] }}
+      className="flex flex-col rounded-2xl overflow-hidden border border-white/[0.06] hover:border-white/[0.14] transition-colors duration-500 group h-full"
+      style={{ background: course.cardBg }}
       role="listitem"
       aria-label={`${course.title} — ${course.grades}`}
     >
-      {/* Corner brackets decoration */}
-      <div className="absolute top-3 right-3 w-4 h-4 border-t border-r border-border-custom/60 md:hidden" aria-hidden="true" />
-      <div className="absolute bottom-3 left-3 w-4 h-4 border-b border-l border-border-custom/60 md:hidden" aria-hidden="true" />
 
-      <div className="flex justify-between items-start mb-8 md:mb-12">
-        <div className="text-text-muted group-hover:text-theme-dark transition-colors duration-500" aria-hidden="true">
-          {course.icon}
-        </div>
-        <span className="inline-block bg-border-custom text-white text-[10px] font-bold uppercase tracking-[0.2em] px-4 py-1.5 rounded-full shadow-sm">
-          {course.grades}
+      {/* ── Visual top area ── */}
+      <div
+        className="relative flex items-center justify-center overflow-hidden h-[180px] md:h-[220px] shrink-0"
+        style={{
+          background: course.visualBg,
+          backgroundImage: dotGrid,
+        }}
+      >
+        {/* Large class number — faint background anchor */}
+        <span
+          className="absolute font-heading font-black select-none pointer-events-none leading-none tracking-tighter"
+          style={{
+            fontSize: 'clamp(5.5rem, 16vw, 9rem)',
+            color: course.numColor,
+            bottom: '-0.15em',
+            right: '-0.05em',
+          }}
+          aria-hidden="true"
+        >
+          {course.range}
         </span>
+
+        {/* Floating tier chip - Moved to top left and scaled up */}
+        <div
+          className="absolute top-5 left-5 z-20 flex items-center gap-2.5 rounded-full border border-white/[0.15] px-5 py-2.5 shadow-lg"
+          style={{
+            background: 'rgba(255,255,255,0.06)',
+            backdropFilter: 'blur(12px)',
+            animationDelay: `${index * 1.2}s`,
+          }}
+        >
+          <span
+            className="w-2.5 h-2.5 rounded-full flex-shrink-0"
+            style={{ background: course.labelColor, boxShadow: `0 0 10px ${course.labelColor}` }}
+          />
+          <span className="font-mono text-xs md:text-sm uppercase tracking-[0.25em] font-bold" style={{ color: course.labelColor }}>
+            {course.title}
+          </span>
+        </div>
+
+        {/* Scarcity badge */}
+        {course.scarcity && (
+          <span className="absolute top-5 right-5 z-10 flex items-center gap-1.5 rounded-full border border-red-400/30 bg-red-400/[0.1] px-4 py-2 font-mono text-[10px] uppercase tracking-widest text-red-400 backdrop-blur-md">
+            <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
+            {course.scarcity}
+          </span>
+        )}
       </div>
 
-      <div className="mt-auto">
-        <h3 className="text-lg md:text-2xl font-bold md:font-light mb-3 md:mb-4 font-heading text-text-main tracking-wide uppercase">
-          {course.title}
+      {/* ── Text bottom area ── */}
+      <div className="flex flex-col flex-1 px-6 md:px-8 py-8 gap-5">
+        <h3 className="font-heading font-bold text-2xl md:text-3xl text-text-main uppercase tracking-tight leading-tight">
+          {course.grades}
         </h3>
-        <p className="font-mono text-[10px] md:text-xs uppercase tracking-widest text-text-muted leading-relaxed md:leading-loose">
+        <p className="font-mono text-[11px] uppercase tracking-widest text-text-muted leading-relaxed">
           {course.description}
         </p>
+
+        {/* Feature list */}
+        <ul className="flex-1 mt-3 space-y-1">
+          {course.features.map((feat) => (
+            <li
+              key={feat}
+              className="flex items-start gap-3 py-2 border-b border-white/[0.05] last:border-0"
+            >
+              <svg
+                className="w-4 h-4 flex-shrink-0 mt-0.5"
+                style={{ color: course.labelColor }}
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+                strokeWidth={2}
+              >
+                <path strokeLinecap="round" strokeLinejoin="round" d="M4.5 12.75l6 6 9-13.5" />
+              </svg>
+              <span className="text-[14px] text-white/80 leading-snug">{feat}</span>
+            </li>
+          ))}
+        </ul>
+
+        {/* Subjects tag */}
+        <div className="pt-4 border-t border-white/[0.08] mt-auto">
+          <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: course.labelColor }}>
+            {course.subjects}
+          </span>
+        </div>
       </div>
+
     </motion.article>
   );
 }
