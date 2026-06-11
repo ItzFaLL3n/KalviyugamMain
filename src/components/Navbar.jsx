@@ -194,46 +194,58 @@ export default function Navbar() {
             initial="hidden"
             animate="visible"
             exit="exit"
-            className="fixed inset-0 z-[110] bg-[#050B14]/98 backdrop-blur-xl flex flex-col items-center justify-start pt-28 pb-12 overflow-y-auto gap-2 lg:hidden"
+            className="fixed inset-0 z-[110] bg-[#050B14]/40 backdrop-blur-3xl backdrop-saturate-[1.9] flex flex-col items-center justify-start pt-28 pb-12 overflow-y-auto lg:hidden"
           >
-            {navLinks.map((link, i) => {
-              const isActive = i === activeIndex;
-              return (
-                <motion.div key={link.label} variants={itemVariants} className="w-full flex justify-center">
-                  {link.isRoute ? (
-                    <Link
-                      to={link.href}
-                      onClick={(e) => link.href === '/' ? handleHomeClick(e) : handleClick(e, link, i)}
-                      className={`w-64 text-center py-4 font-mono text-sm uppercase tracking-[0.2em] rounded-xl transition-colors duration-150 ${
-                        isActive ? 'text-theme-dark bg-theme-dark/10' : 'text-white/40 hover:text-white'
-                      }`}
-                    >
-                      {link.label}
-                    </Link>
-                  ) : (
-                    <a
-                      href={link.href}
-                      onClick={(e) => handleClick(e, link, i)}
-                      className={`w-64 text-center py-4 font-mono text-sm uppercase tracking-[0.2em] rounded-xl transition-colors duration-150 ${
-                        isActive ? 'text-theme-dark bg-theme-dark/10' : 'text-white/40 hover:text-white'
-                      }`}
-                    >
-                      {link.label}
-                    </a>
-                  )}
-                </motion.div>
-              );
-            })}
+            {/* Liquid Glass Menu Panel */}
+            <div className="w-[90%] max-w-sm bg-white/[0.03] border border-white/[0.08] rounded-3xl p-6 flex flex-col gap-2 shadow-[0_8px_32px_rgba(0,0,0,0.4)] backdrop-blur-2xl relative overflow-hidden shrink-0">
+              {/* Subtle glass reflection glow */}
+              <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-white/20 to-transparent" />
+              <div className="absolute -top-10 -left-10 w-32 h-32 bg-theme-dark/10 rounded-full blur-2xl pointer-events-none" />
+              <div className="absolute -bottom-10 -right-10 w-32 h-32 bg-theme-mid/10 rounded-full blur-2xl pointer-events-none" />
 
-            <motion.div variants={itemVariants} className="w-full flex justify-center mt-4">
-              <a
-                href="/#contact"
-                onClick={(e) => handleClick(e, { href: '/#contact', isRoute: false, sectionId: 'contact' }, 6)}
-                className="w-64 text-center font-mono text-sm tracking-[0.25em] uppercase px-8 py-4 rounded-full bg-gradient-to-r from-theme-mid to-theme-dark text-white shadow-[0_0_24px_rgba(0,212,255,0.2)] hover:shadow-[0_0_32px_rgba(0,212,255,0.4)] transition-shadow duration-300"
-              >
-                Enroll Now
-              </a>
-            </motion.div>
+              {navLinks.map((link, i) => {
+                const isActive = i === activeIndex;
+                return (
+                  <motion.div key={link.label} variants={itemVariants} className="w-full flex justify-center">
+                    {link.isRoute ? (
+                      <Link
+                        to={link.href}
+                        onClick={(e) => link.href === '/' ? handleHomeClick(e) : handleClick(e, link, i)}
+                        className={`w-full text-center py-3.5 font-mono text-sm uppercase tracking-[0.2em] rounded-2xl transition-all duration-200 border ${
+                          isActive 
+                            ? 'text-theme-dark bg-theme-dark/15 border-theme-dark/40 shadow-[0_0_20px_rgba(0,212,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] font-semibold' 
+                            : 'text-white/70 hover:text-white bg-transparent border-transparent hover:bg-white/[0.03]'
+                        }`}
+                      >
+                        {link.label}
+                      </Link>
+                    ) : (
+                      <a
+                        href={link.href}
+                        onClick={(e) => handleClick(e, link, i)}
+                        className={`w-full text-center py-3.5 font-mono text-sm uppercase tracking-[0.2em] rounded-2xl transition-all duration-200 border ${
+                          isActive 
+                            ? 'text-theme-dark bg-theme-dark/15 border-theme-dark/40 shadow-[0_0_20px_rgba(0,212,255,0.25),inset_0_1px_1px_rgba(255,255,255,0.15)] font-semibold' 
+                            : 'text-white/70 hover:text-white bg-transparent border-transparent hover:bg-white/[0.03]'
+                        }`}
+                      >
+                        {link.label}
+                      </a>
+                    )}
+                  </motion.div>
+                );
+              })}
+
+              <motion.div variants={itemVariants} className="w-full flex justify-center mt-2">
+                <a
+                  href="/#contact"
+                  onClick={(e) => handleClick(e, { href: '/#contact', isRoute: false, sectionId: 'contact' }, 6)}
+                  className="w-full text-center font-mono text-sm tracking-[0.25em] uppercase px-8 py-4 rounded-2xl bg-gradient-to-r from-theme-mid to-theme-dark text-white shadow-[0_4px_20px_rgba(37,99,235,0.3)] hover:shadow-[0_4px_30px_rgba(37,99,235,0.5)] transition-all duration-300 transform active:scale-[0.98]"
+                >
+                  Enroll Now
+                </a>
+              </motion.div>
+            </div>
           </motion.div>
         )}
       </AnimatePresence>
