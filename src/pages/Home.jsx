@@ -1,13 +1,28 @@
 import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Hero from '../sections/Hero';
 import Courses from '../sections/Courses';
-import OurPrograms from '../sections/OurPrograms';
+import Results from '../sections/Results';
 import WhyWeStandOut from '../sections/WhyWeStandOut';
 // import WhyChooseUs from '../sections/WhyChooseUs';
 import Testimonials from '../sections/Testimonials';
 import Contact from '../sections/Contact';
 
 export default function Home() {
+  const location = useLocation();
+
+  /* ── Scroll to a section when navigated from another page ── */
+  useEffect(() => {
+    const target = location.state?.scrollTo;
+    if (!target) return;
+    // Wait for PageTransition animation (600ms) + paint buffer
+    const timer = setTimeout(() => {
+      const el = document.getElementById(target);
+      if (el) el.scrollIntoView({ behavior: 'smooth' });
+    }, 700);
+    return () => clearTimeout(timer);
+  }, [location.state]); // re-runs whenever router state changes
+
   useEffect(() => {
     // Select all sections with an id
     const sections = document.querySelectorAll('section[id]');
@@ -36,7 +51,7 @@ export default function Home() {
     <main>
       <Hero />
       <Courses />
-      <OurPrograms />
+      <Results />
       <WhyWeStandOut />
       {/* <WhyChooseUs /> */}
       <Testimonials />

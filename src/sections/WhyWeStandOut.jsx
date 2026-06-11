@@ -5,7 +5,7 @@ const stats = [
   { value: 10, suffix: '+', label: 'Years of Excellence', sub: 'Trusted since the beginning' },
   { value: 500, suffix: '+', label: 'Toppers Shaped', sub: 'Board & competitive ranks' },
   { value: 95, suffix: '%', label: 'Pass Rate', sub: 'Consistent exam results' },
-  { value: 15, suffix: ':1', label: 'Student Ratio', sub: 'Intentionally small batches' },
+  { value: 10, suffix: ':1', label: 'Student Ratio', sub: 'Intentionally small batches' },
 ];
 
 const pillars = [
