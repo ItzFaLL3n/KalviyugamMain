@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { motion, useInView } from 'framer-motion';
+import { motion, useInView, AnimatePresence } from 'framer-motion';
 
 const dotGrid = `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E")`;
 
@@ -19,7 +19,7 @@ const courses = [
     cardBg: 'linear-gradient(145deg, #0a1020, #030814)',
     visualBg: 'radial-gradient(circle at top left, #121d3a, #080d1a)',
     numColor: 'rgba(255,255,255,0.06)',
-    labelColor: '#3b82f6', // blue-500
+    labelColor: '#3b82f6',
   },
   {
     title: 'Excellence',
@@ -38,7 +38,7 @@ const courses = [
     cardBg: 'linear-gradient(145deg, #08121a, #04090d)',
     visualBg: 'radial-gradient(circle at top left, #102436, #060e15)',
     numColor: 'rgba(255,255,255,0.06)',
-    labelColor: '#0ea5e9', // sky-500
+    labelColor: '#0ea5e9',
   },
   {
     title: 'Mastery',
@@ -49,13 +49,13 @@ const courses = [
     features: [
       'Deep conceptual learning',
       'Board Exam coaching',
-      'Practical lab guidance'
+      'Practical lab guidance',
     ],
     scarcity: 'Only 8 Seats',
     cardBg: 'linear-gradient(145deg, #0e1116, #07090b)',
     visualBg: 'radial-gradient(circle at top left, #18202b, #090c10)',
     numColor: 'rgba(255,255,255,0.06)',
-    labelColor: '#94a3b8', // slate-400
+    labelColor: '#94a3b8',
   },
   {
     title: 'Competitive',
@@ -67,13 +67,13 @@ const courses = [
       'Rigorous mock tests',
       'Advanced problem solving',
       'PYQ analysis',
-      'Time management strategies'
+      'Time management strategies',
     ],
     scarcity: null,
     cardBg: 'linear-gradient(145deg, #110c14, #08060a)',
     visualBg: 'radial-gradient(circle at top left, #23162b, #0d0810)',
     numColor: 'rgba(255,255,255,0.06)',
-    labelColor: '#a855f7', // purple-500
+    labelColor: '#a855f7',
   },
   {
     title: 'Commerce',
@@ -85,13 +85,13 @@ const courses = [
       'Concept clarity',
       'Case study analysis',
       'Previous year papers',
-      'Board exam focus'
+      'Board exam focus',
     ],
     scarcity: null,
     cardBg: 'linear-gradient(145deg, #0a1210, #050908)',
     visualBg: 'radial-gradient(circle at top left, #112822, #060e0c)',
     numColor: 'rgba(255,255,255,0.06)',
-    labelColor: '#10b981', // emerald-500
+    labelColor: '#10b981',
   },
   {
     title: 'Revision',
@@ -103,17 +103,46 @@ const courses = [
       'Full-length mock exams',
       'Detailed performance analysis',
       'Doubt clearing sessions',
-      'Last-minute tips'
+      'Last-minute tips',
     ],
     scarcity: null,
     cardBg: 'linear-gradient(145deg, #120d0a, #090605)',
     visualBg: 'radial-gradient(circle at top left, #2b1d11, #0d0905)',
     numColor: 'rgba(255,255,255,0.06)',
-    labelColor: '#f59e0b', // amber-500
+    labelColor: '#f59e0b',
   },
 ];
 
-/* ── Course Card (shared between carousel & grid) ── */
+/* ── Slide direction variants ── */
+const slideVariants = {
+  enter: (dir) => ({
+    x: dir > 0 ? '100%' : '-100%',
+    opacity: 0,
+    scale: 0.94,
+  }),
+  center: {
+    x: 0,
+    opacity: 1,
+    scale: 1,
+    transition: {
+      x: { type: 'spring', stiffness: 280, damping: 30 },
+      opacity: { duration: 0.25 },
+      scale: { duration: 0.35, ease: [0.23, 1, 0.32, 1] },
+    },
+  },
+  exit: (dir) => ({
+    x: dir > 0 ? '-100%' : '100%',
+    opacity: 0,
+    scale: 0.94,
+    transition: {
+      x: { type: 'spring', stiffness: 280, damping: 30 },
+      opacity: { duration: 0.2 },
+      scale: { duration: 0.25 },
+    },
+  }),
+};
+
+/* ── Course Card ── */
 function CourseCard({ course, index, isCarousel }) {
   return (
     <motion.article
@@ -127,16 +156,11 @@ function CourseCard({ course, index, isCarousel }) {
       role="listitem"
       aria-label={`${course.title} — ${course.grades}`}
     >
-
       {/* ── Visual top area ── */}
       <div
         className="relative flex items-center justify-center overflow-hidden h-[130px] md:h-[150px] shrink-0"
-        style={{
-          background: course.visualBg,
-          backgroundImage: dotGrid,
-        }}
+        style={{ background: course.visualBg, backgroundImage: dotGrid }}
       >
-        {/* Large class number — faint background anchor */}
         <span
           className="absolute font-heading font-black select-none pointer-events-none leading-none tracking-tighter"
           style={{
@@ -150,14 +174,9 @@ function CourseCard({ course, index, isCarousel }) {
           {course.range}
         </span>
 
-        {/* Floating tier chip - Moved to top left and scaled up */}
         <div
           className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full border border-white/[0.15] px-4 py-1.5 shadow-lg"
-          style={{
-            background: 'rgba(255,255,255,0.06)',
-            backdropFilter: 'blur(12px)',
-            animationDelay: `${index * 1.2}s`,
-          }}
+          style={{ background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}
         >
           <span
             className="w-2 h-2 rounded-full flex-shrink-0"
@@ -168,7 +187,6 @@ function CourseCard({ course, index, isCarousel }) {
           </span>
         </div>
 
-        {/* Scarcity badge */}
         {course.scarcity && (
           <span className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-full border border-red-400/30 bg-red-400/[0.1] px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-widest text-red-400 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
@@ -186,7 +204,6 @@ function CourseCard({ course, index, isCarousel }) {
           {course.description}
         </p>
 
-        {/* Feature list */}
         <ul className="flex-1 mt-1.5 space-y-0.5">
           {course.features.map((feat) => (
             <li
@@ -208,63 +225,275 @@ function CourseCard({ course, index, isCarousel }) {
           ))}
         </ul>
 
-        {/* Subjects tag */}
         <div className="pt-3 border-t border-white/[0.08] mt-auto">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: course.labelColor }}>
             {course.subjects}
           </span>
         </div>
       </div>
-
     </motion.article>
   );
 }
 
-export default function Courses() {
-  const ref = useRef(null);
-  const scrollRef = useRef(null);
-  const isInView = useInView(ref, { once: true, margin: '-100px' });
+/* ══════════════════════════════════════════════════════
+   Mobile Scroll-Driven Card Sequencer
+   ══════════════════════════════════════════════════════ */
+function MobileScrollSequencer() {
   const [activeIndex, setActiveIndex] = useState(0);
+  const [direction, setDirection] = useState(1);
+  const [animating, setAnimating] = useState(false);
 
-  /* ── Track scroll position for dot indicators ── */
-  const handleScroll = useCallback(() => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = el.firstElementChild?.offsetWidth || 1;
-    const gap = 16;
-    const idx = Math.round(el.scrollLeft / (cardWidth + gap));
-    setActiveIndex(Math.min(idx, courses.length - 1));
+  /* ── Stable refs so event listeners never go stale ── */
+  const activeIndexRef = useRef(0);
+  const animatingRef   = useRef(false);
+  useEffect(() => { activeIndexRef.current = activeIndex; }, [activeIndex]);
+  useEffect(() => { animatingRef.current   = animating;   }, [animating]);
+
+  /* ── Advance one card in the given direction ── */
+  const advance = useCallback((dir) => {
+    if (animatingRef.current) return;
+    const next = activeIndexRef.current + dir;
+    if (next < 0 || next >= courses.length) return;
+    setDirection(dir);
+    setAnimating(true);
+    setActiveIndex(next);
   }, []);
+
+  /* ── Wheel: intercept only mid-sequence, pass through at boundaries ── */
+  const wheelAccumRef = useRef(0);
+  const wheelTimerRef = useRef(null);
+  const WHEEL_THRESHOLD = 55;
+
+  const handleWheel = useCallback((e) => {
+    const idx  = activeIndexRef.current;
+    const down = e.deltaY > 0;
+
+    /* At the boundary → let page scroll through naturally */
+    if (down  && idx >= courses.length - 1) { wheelAccumRef.current = 0; return; }
+    if (!down && idx <= 0)                  { wheelAccumRef.current = 0; return; }
+
+    /* Mid-sequence → absorb the scroll event */
+    e.preventDefault();
+    if (animatingRef.current) return;
+
+    wheelAccumRef.current += e.deltaY;
+    clearTimeout(wheelTimerRef.current);
+    wheelTimerRef.current = setTimeout(() => { wheelAccumRef.current = 0; }, 220);
+
+    if (wheelAccumRef.current >= WHEEL_THRESHOLD) {
+      wheelAccumRef.current = 0;
+      advance(1);
+    } else if (wheelAccumRef.current <= -WHEEL_THRESHOLD) {
+      wheelAccumRef.current = 0;
+      advance(-1);
+    }
+  }, [advance]);
+
+  /* ══════════════════════════════════════════════════════
+     Touch: locks into one of two modes after 10px of move:
+       'sequencer'   → swallow touch, flip card on touchend
+       'passthrough' → manually relay to window.scrollBy
+         (required because touchAction:'none' means the
+         browser will NEVER scroll on its own — we must)
+     ══════════════════════════════════════════════════════ */
+  const touchStartY  = useRef(null);
+  const touchLastY   = useRef(null);
+  const touchMode    = useRef(null); // null | 'sequencer' | 'passthrough'
+  const TOUCH_THRESHOLD = 42;
+
+  const handleTouchStart = useCallback((e) => {
+    touchStartY.current = e.touches[0].clientY;
+    touchLastY.current  = e.touches[0].clientY;
+    touchMode.current   = null;
+  }, []);
+
+  const handleTouchMove = useCallback((e) => {
+    if (touchStartY.current === null) return;
+
+    const currentY   = e.touches[0].clientY;
+    const moveDelta  = touchLastY.current - currentY;  // +ve = finger up = scroll down
+    const totalDelta = touchStartY.current - currentY;
+    touchLastY.current = currentY;
+
+    /* Decide gesture mode once direction is clear (> 10 px) */
+    if (touchMode.current === null && Math.abs(totalDelta) > 10) {
+      const idx  = activeIndexRef.current;
+      const down = totalDelta > 0;
+      const canAdvance = (down && idx < courses.length - 1) || (!down && idx > 0);
+      touchMode.current = canAdvance ? 'sequencer' : 'passthrough';
+    }
+
+    if (touchMode.current === 'sequencer') {
+      /* Swallow touch — card flip happens on touchend */
+      e.preventDefault();
+    } else if (touchMode.current === 'passthrough') {
+      /*
+       * touchAction:'none' stops the browser from scrolling automatically.
+       * We manually relay the finger movement to the window so the page
+       * continues scrolling past this section at both ends.
+       */
+      window.scrollBy({ top: moveDelta, behavior: 'instant' });
+    }
+  }, []);
+
+  const handleTouchEnd = useCallback((e) => {
+    if (touchStartY.current === null) return;
+    const delta = touchStartY.current - e.changedTouches[0].clientY;
+    const mode  = touchMode.current;
+    touchStartY.current = null;
+    touchLastY.current  = null;
+    touchMode.current   = null;
+
+    if (mode !== 'sequencer' || animatingRef.current) return;
+    if (delta >  TOUCH_THRESHOLD) advance(1);
+    if (delta < -TOUCH_THRESHOLD) advance(-1);
+  }, [advance]);
+
+  /* ── Attach listeners once ── */
+  const wrapperRef = useRef(null);
 
   useEffect(() => {
-    const el = scrollRef.current;
+    const el = wrapperRef.current;
     if (!el) return;
-    el.addEventListener('scroll', handleScroll, { passive: true });
-    return () => el.removeEventListener('scroll', handleScroll);
-  }, [handleScroll]);
+    el.addEventListener('wheel',      handleWheel,      { passive: false });
+    el.addEventListener('touchstart', handleTouchStart, { passive: true  });
+    /* non-passive: we call preventDefault() in sequencer mode */
+    el.addEventListener('touchmove',  handleTouchMove,  { passive: false });
+    el.addEventListener('touchend',   handleTouchEnd,   { passive: true  });
+    return () => {
+      el.removeEventListener('wheel',      handleWheel);
+      el.removeEventListener('touchstart', handleTouchStart);
+      el.removeEventListener('touchmove',  handleTouchMove);
+      el.removeEventListener('touchend',   handleTouchEnd);
+    };
+  }, [handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd]);
 
-  /* ── Arrow navigation ── */
-  const scrollTo = useCallback((direction) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = el.firstElementChild?.offsetWidth || 280;
-    const gap = 16;
-    const next = direction === 'next'
-      ? Math.min(activeIndex + 1, courses.length - 1)
-      : Math.max(activeIndex - 1, 0);
-    el.scrollTo({ left: next * (cardWidth + gap), behavior: 'smooth' });
-    setActiveIndex(next);
-  }, [activeIndex]);
+  const course = courses[activeIndex];
 
-  /* ── Dot click navigation ── */
-  const scrollToIndex = useCallback((idx) => {
-    const el = scrollRef.current;
-    if (!el) return;
-    const cardWidth = el.firstElementChild?.offsetWidth || 280;
-    const gap = 16;
-    el.scrollTo({ left: idx * (cardWidth + gap), behavior: 'smooth' });
-    setActiveIndex(idx);
-  }, []);
+  return (
+    <div ref={wrapperRef} className="relative select-none" style={{ touchAction: 'none' }}>
+      {/* ── Card area with AnimatePresence ── */}
+      <div
+        className="relative overflow-hidden rounded-2xl"
+        style={{ minHeight: '420px' }}
+      >
+        <AnimatePresence
+          custom={direction}
+          initial={false}
+          onExitComplete={() => setAnimating(false)}
+        >
+          <motion.div
+            key={activeIndex}
+            custom={direction}
+            variants={slideVariants}
+            initial="enter"
+            animate="center"
+            exit="exit"
+            className="absolute inset-0"
+          >
+            <CourseCard course={course} index={activeIndex} isCarousel />
+          </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* ── Progress indicator bar ── */}
+      <div className="mt-5 flex items-center gap-3 px-1">
+        {/* Prev button */}
+        <button
+          onClick={() => !animating && advance(-1)}
+          disabled={activeIndex === 0}
+          aria-label="Previous course"
+          className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+            activeIndex === 0
+              ? 'border-white/10 text-white/20 cursor-default'
+              : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white active:scale-95'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
+          </svg>
+        </button>
+
+        {/* Dot pills */}
+        <div className="flex-1 flex items-center justify-center gap-1.5" role="tablist" aria-label="Course pages">
+          {courses.map((_, i) => (
+            <button
+              key={i}
+              role="tab"
+              aria-selected={i === activeIndex}
+              aria-label={`Go to course ${i + 1}`}
+              onClick={() => {
+                if (animating || i === activeIndex) return;
+                setDirection(i > activeIndex ? 1 : -1);
+                setAnimating(true);
+                setActiveIndex(i);
+              }}
+              className="rounded-full transition-all duration-300"
+              style={{
+                width: i === activeIndex ? '28px' : '8px',
+                height: '8px',
+                background: i === activeIndex
+                  ? course.labelColor
+                  : 'rgba(255,255,255,0.18)',
+                boxShadow: i === activeIndex ? `0 0 10px ${course.labelColor}88` : 'none',
+              }}
+            />
+          ))}
+        </div>
+
+        {/* Next button */}
+        <button
+          onClick={() => !animating && advance(1)}
+          disabled={activeIndex === courses.length - 1}
+          aria-label="Next course"
+          className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
+            activeIndex === courses.length - 1
+              ? 'border-white/10 text-white/20 cursor-default'
+              : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white active:scale-95'
+          }`}
+        >
+          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
+            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
+          </svg>
+        </button>
+      </div>
+
+      {/* ── Counter label ── */}
+      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-white/30">
+        {String(activeIndex + 1).padStart(2, '0')} / {String(courses.length).padStart(2, '0')}
+      </p>
+
+      {/* ── Scroll hint (only on first card) ── */}
+      {activeIndex === 0 && (
+        <motion.div
+          initial={{ opacity: 0, y: 6 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0 }}
+          transition={{ delay: 1.2, duration: 0.6 }}
+          className="mt-4 flex flex-col items-center gap-1.5"
+          aria-hidden="true"
+        >
+          <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-white/25">Swipe or scroll</span>
+          <motion.div
+            animate={{ y: [0, 4, 0] }}
+            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+          >
+            <svg className="w-4 h-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            </svg>
+          </motion.div>
+        </motion.div>
+      )}
+    </div>
+  );
+}
+
+/* ══════════════════════════════════════════════════════
+   Main Section
+   ══════════════════════════════════════════════════════ */
+export default function Courses() {
+  const ref = useRef(null);
+  const isInView = useInView(ref, { once: true, margin: '-100px' });
 
   return (
     <section id="courses" className="py-16 md:py-24 lg:py-32 relative overflow-hidden" aria-labelledby="courses-heading">
@@ -309,76 +538,9 @@ export default function Courses() {
             </motion.h2>
           </div>
 
-          {/* ═══════ MOBILE: Swipeable Card Carousel ═══════ */}
-          <div className="md:hidden" role="list" aria-label="Courses carousel">
-            <div
-              ref={scrollRef}
-              className="flex gap-4 overflow-x-auto snap-x snap-mandatory scrollbar-hide pb-2 -mx-1 px-1"
-              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none', WebkitOverflowScrolling: 'touch' }}
-            >
-              {courses.map((course, index) => (
-                <div
-                  key={course.title}
-                  className="snap-center flex-shrink-0"
-                  style={{ width: 'calc(100vw - 64px)', maxWidth: '340px', minHeight: '260px' }}
-                >
-                  <CourseCard course={course} index={index} isInView={isInView} isCarousel />
-                </div>
-              ))}
-            </div>
-
-            {/* Navigation: Arrows + Dots */}
-            <nav className="flex items-center justify-between mt-8 px-1" aria-label="Carousel navigation">
-              {/* Left Arrow */}
-              <button
-                onClick={() => scrollTo('prev')}
-                className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-300 ${
-                  activeIndex === 0
-                    ? 'border-border-custom/30 text-text-muted/30 cursor-default'
-                    : 'border-border-custom text-text-muted hover:border-theme-dark hover:text-theme-dark'
-                }`}
-                disabled={activeIndex === 0}
-                aria-label="Previous course"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-                </svg>
-              </button>
-
-              {/* Dot Indicators */}
-              <div className="flex items-center gap-2" role="tablist" aria-label="Course carousel pages">
-                {courses.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => scrollToIndex(i)}
-                    role="tab"
-                    aria-selected={i === activeIndex}
-                    aria-label={`Go to course ${i + 1}`}
-                    className={`rounded-full transition-all duration-300 ${
-                      i === activeIndex
-                        ? 'w-7 h-2.5 bg-text-main'
-                        : 'w-2.5 h-2.5 bg-text-muted/30 hover:bg-text-muted/50'
-                    }`}
-                  />
-                ))}
-              </div>
-
-              {/* Right Arrow */}
-              <button
-                onClick={() => scrollTo('next')}
-                className={`w-11 h-11 rounded-full border flex items-center justify-center transition-all duration-300 ${
-                  activeIndex === courses.length - 1
-                    ? 'border-border-custom/30 text-text-muted/30 cursor-default'
-                    : 'border-border-custom text-text-muted hover:border-theme-dark hover:text-theme-dark'
-                }`}
-                disabled={activeIndex === courses.length - 1}
-                aria-label="Next course"
-              >
-                <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-                  <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-                </svg>
-              </button>
-            </nav>
+          {/* ═══════ MOBILE: Scroll-Driven Sequencer ═══════ */}
+          <div className="md:hidden" aria-label="Courses sequencer">
+            <MobileScrollSequencer />
           </div>
 
           {/* ═══════ DESKTOP: Grid Layout ═══════ */}
@@ -387,8 +549,6 @@ export default function Courses() {
               <CourseCard key={course.title} course={course} index={index} isInView={isInView} />
             ))}
           </div>
-
-
         </div>
       </div>
     </section>
