@@ -225,30 +225,71 @@ function MobileCarousel() {
   const rafRef    = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
 
-  /* Passive scroll listener — updates dots/bars via rAF (no layout thrashing) */
+  /* ── Update progress bars on scroll (passive, rAF-throttled) ── */
   const handleScroll = useCallback(() => {
     if (rafRef.current) return;
     rafRef.current = requestAnimationFrame(() => {
       rafRef.current = null;
       const el = scrollRef.current;
       if (!el) return;
-      /* Card width = container width (100% snap items) */
-      const cardW = el.offsetWidth;
-      if (!cardW) return;
-      const idx = Math.round(el.scrollLeft / cardW);
+      const idx = Math.round(el.scrollLeft / el.offsetWidth);
       setActiveIndex(Math.min(Math.max(idx, 0), courses.length - 1));
     });
+  }, []);
+
+  /* ── Axis-lock for vertical passthrough ──────────────────────
+     touch-action:pan-x tells the browser to handle horizontal
+     snap natively (zero jitter). But it also stops the browser
+     from scrolling the page on a vertical swipe — so we relay
+     vertical movement to window.scrollBy() manually.
+  ────────────────────────────────────────────────────────────── */
+  const t0X  = useRef(0);
+  const t0Y  = useRef(0);
+  const tPrY = useRef(0);              // previous Y for delta calc
+  const axis = useRef(null);           // null | 'h' | 'v'
+
+  const onTouchStart = useCallback((e) => {
+    t0X.current  = e.touches[0].clientX;
+    t0Y.current  = e.touches[0].clientY;
+    tPrY.current = e.touches[0].clientY;
+    axis.current = null;
+  }, []);
+
+  const onTouchMove = useCallback((e) => {
+    const curY = e.touches[0].clientY;
+
+    /* Lock axis once gesture moves > 8 px */
+    if (axis.current === null) {
+      const dx = Math.abs(e.touches[0].clientX - t0X.current);
+      const dy = Math.abs(curY - t0Y.current);
+      if (dx > 8 || dy > 8) axis.current = dx >= dy ? 'h' : 'v';
+    }
+
+    if (axis.current === 'v') {
+      /* Relay vertical finger movement to the page scroll.
+         touch-action:pan-x means the browser won't do this for us. */
+      const delta = tPrY.current - curY;   // +ve = finger up = scroll down
+      window.scrollBy({ top: delta, behavior: 'instant' });
+    }
+    /* Horizontal: browser CSS snap handles it — no JS needed */
+
+    tPrY.current = curY;
   }, []);
 
   useEffect(() => {
     const el = scrollRef.current;
     if (!el) return;
-    el.addEventListener('scroll', handleScroll, { passive: true });
+    el.addEventListener('scroll',     handleScroll, { passive: true });
+    el.addEventListener('touchstart', onTouchStart, { passive: true });
+    /* passive:true — we never call preventDefault, just read coords */
+    el.addEventListener('touchmove',  onTouchMove,  { passive: true });
     return () => {
-      el.removeEventListener('scroll', handleScroll);
+      el.removeEventListener('scroll',     handleScroll);
+      el.removeEventListener('touchstart', onTouchStart);
+      el.removeEventListener('touchmove',  onTouchMove);
       if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleScroll]);
+  }, [handleScroll, onTouchStart, onTouchMove]);
 
   /* Programmatic scroll for progress-bar / dot taps */
   const scrollToIndex = useCallback((idx) => {
@@ -307,7 +348,10 @@ function MobileCarousel() {
           scrollbarWidth: 'none',
           msOverflowStyle: 'none',
           WebkitOverflowScrolling: 'touch',
-          /* Slightly less than full width + right padding = shows peek of next card */
+          /* pan-x: browser handles horizontal snap at compositor level
+             (zero lag, zero jitter). Vertical gestures are relayed to
+             window.scrollBy() by our JS handler above.              */
+          touchAction: 'pan-x',
           gap: 0,
         }}
       >
