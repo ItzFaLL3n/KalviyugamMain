@@ -1,5 +1,5 @@
 import { useRef, useState, useCallback, useEffect } from 'react';
-import { motion, useInView, AnimatePresence } from 'framer-motion';
+import { motion, useInView } from 'framer-motion';
 
 const dotGrid = `url("data:image/svg+xml,%3Csvg width='24' height='24' viewBox='0 0 24 24' xmlns='http://www.w3.org/2000/svg'%3E%3Ccircle cx='1' cy='1' r='1' fill='rgba(255,255,255,0.04)'/%3E%3C/svg%3E")`;
 
@@ -113,36 +113,9 @@ const courses = [
   },
 ];
 
-/* ── Slide direction variants ── */
-const slideVariants = {
-  enter: (dir) => ({
-    x: dir > 0 ? '100%' : '-100%',
-    opacity: 0,
-    scale: 0.94,
-  }),
-  center: {
-    x: 0,
-    opacity: 1,
-    scale: 1,
-    transition: {
-      x: { type: 'spring', stiffness: 280, damping: 30 },
-      opacity: { duration: 0.25 },
-      scale: { duration: 0.35, ease: [0.23, 1, 0.32, 1] },
-    },
-  },
-  exit: (dir) => ({
-    x: dir > 0 ? '-100%' : '100%',
-    opacity: 0,
-    scale: 0.94,
-    transition: {
-      x: { type: 'spring', stiffness: 280, damping: 30 },
-      opacity: { duration: 0.2 },
-      scale: { duration: 0.25 },
-    },
-  }),
-};
-
-/* ── Course Card ── */
+/* ══════════════════════════════════════════════════════
+   Course Card (shared between carousel & grid)
+   ══════════════════════════════════════════════════════ */
 function CourseCard({ course, index, isCarousel }) {
   return (
     <motion.article
@@ -161,6 +134,7 @@ function CourseCard({ course, index, isCarousel }) {
         className="relative flex items-center justify-center overflow-hidden h-[130px] md:h-[150px] shrink-0"
         style={{ background: course.visualBg, backgroundImage: dotGrid }}
       >
+        {/* Large faint class number */}
         <span
           className="absolute font-heading font-black select-none pointer-events-none leading-none tracking-tighter"
           style={{
@@ -174,6 +148,7 @@ function CourseCard({ course, index, isCarousel }) {
           {course.range}
         </span>
 
+        {/* Tier chip */}
         <div
           className="absolute top-4 left-4 z-20 flex items-center gap-2 rounded-full border border-white/[0.15] px-4 py-1.5 shadow-lg"
           style={{ background: 'rgba(255,255,255,0.06)', backdropFilter: 'blur(12px)' }}
@@ -187,6 +162,7 @@ function CourseCard({ course, index, isCarousel }) {
           </span>
         </div>
 
+        {/* Scarcity badge */}
         {course.scarcity && (
           <span className="absolute top-4 right-4 z-10 flex items-center gap-1 rounded-full border border-red-400/30 bg-red-400/[0.1] px-3.5 py-1.5 font-mono text-[10px] uppercase tracking-widest text-red-400 backdrop-blur-md">
             <span className="w-1.5 h-1.5 rounded-full bg-red-400 animate-pulse" />
@@ -204,6 +180,7 @@ function CourseCard({ course, index, isCarousel }) {
           {course.description}
         </p>
 
+        {/* Feature list */}
         <ul className="flex-1 mt-1.5 space-y-0.5">
           {course.features.map((feat) => (
             <li
@@ -225,6 +202,7 @@ function CourseCard({ course, index, isCarousel }) {
           ))}
         </ul>
 
+        {/* Subjects tag */}
         <div className="pt-3 border-t border-white/[0.08] mt-auto">
           <span className="font-mono text-[10px] uppercase tracking-[0.2em] font-bold" style={{ color: course.labelColor }}>
             {course.subjects}
@@ -236,254 +214,132 @@ function CourseCard({ course, index, isCarousel }) {
 }
 
 /* ══════════════════════════════════════════════════════
-   Mobile Scroll-Driven Card Sequencer
+   Mobile Instagram-style snap carousel
+   — Pure CSS scroll-snap, zero JS touch interception.
+   — Browser handles physics at compositor level = no lag.
+   — Users can speed-swipe through multiple cards freely.
+   — Page scrolls past the section naturally at both ends.
    ══════════════════════════════════════════════════════ */
-function MobileScrollSequencer() {
+function MobileCarousel() {
+  const scrollRef = useRef(null);
+  const rafRef    = useRef(null);
   const [activeIndex, setActiveIndex] = useState(0);
-  const [direction, setDirection] = useState(1);
-  const [animating, setAnimating] = useState(false);
 
-  /* ── Stable refs so event listeners never go stale ── */
-  const activeIndexRef = useRef(0);
-  const animatingRef   = useRef(false);
-  useEffect(() => { activeIndexRef.current = activeIndex; }, [activeIndex]);
-  useEffect(() => { animatingRef.current   = animating;   }, [animating]);
-
-  /* ── Advance one card in the given direction ── */
-  const advance = useCallback((dir) => {
-    if (animatingRef.current) return;
-    const next = activeIndexRef.current + dir;
-    if (next < 0 || next >= courses.length) return;
-    setDirection(dir);
-    setAnimating(true);
-    setActiveIndex(next);
+  /* Passive scroll listener — updates dots/bars via rAF (no layout thrashing) */
+  const handleScroll = useCallback(() => {
+    if (rafRef.current) return;
+    rafRef.current = requestAnimationFrame(() => {
+      rafRef.current = null;
+      const el = scrollRef.current;
+      if (!el) return;
+      /* Card width = container width (100% snap items) */
+      const cardW = el.offsetWidth;
+      if (!cardW) return;
+      const idx = Math.round(el.scrollLeft / cardW);
+      setActiveIndex(Math.min(Math.max(idx, 0), courses.length - 1));
+    });
   }, []);
-
-  /* ── Wheel: intercept only mid-sequence, pass through at boundaries ── */
-  const wheelAccumRef = useRef(0);
-  const wheelTimerRef = useRef(null);
-  const WHEEL_THRESHOLD = 55;
-
-  const handleWheel = useCallback((e) => {
-    const idx  = activeIndexRef.current;
-    const down = e.deltaY > 0;
-
-    /* At the boundary → let page scroll through naturally */
-    if (down  && idx >= courses.length - 1) { wheelAccumRef.current = 0; return; }
-    if (!down && idx <= 0)                  { wheelAccumRef.current = 0; return; }
-
-    /* Mid-sequence → absorb the scroll event */
-    e.preventDefault();
-    if (animatingRef.current) return;
-
-    wheelAccumRef.current += e.deltaY;
-    clearTimeout(wheelTimerRef.current);
-    wheelTimerRef.current = setTimeout(() => { wheelAccumRef.current = 0; }, 220);
-
-    if (wheelAccumRef.current >= WHEEL_THRESHOLD) {
-      wheelAccumRef.current = 0;
-      advance(1);
-    } else if (wheelAccumRef.current <= -WHEEL_THRESHOLD) {
-      wheelAccumRef.current = 0;
-      advance(-1);
-    }
-  }, [advance]);
-
-  /* ══════════════════════════════════════════════════════
-     Touch: locks into one of two modes after 10px of move:
-       'sequencer'   → swallow touch, flip card on touchend
-       'passthrough' → manually relay to window.scrollBy
-         (required because touchAction:'none' means the
-         browser will NEVER scroll on its own — we must)
-     ══════════════════════════════════════════════════════ */
-  const touchStartY  = useRef(null);
-  const touchLastY   = useRef(null);
-  const touchMode    = useRef(null); // null | 'sequencer' | 'passthrough'
-  const TOUCH_THRESHOLD = 42;
-
-  const handleTouchStart = useCallback((e) => {
-    touchStartY.current = e.touches[0].clientY;
-    touchLastY.current  = e.touches[0].clientY;
-    touchMode.current   = null;
-  }, []);
-
-  const handleTouchMove = useCallback((e) => {
-    if (touchStartY.current === null) return;
-
-    const currentY   = e.touches[0].clientY;
-    const moveDelta  = touchLastY.current - currentY;  // +ve = finger up = scroll down
-    const totalDelta = touchStartY.current - currentY;
-    touchLastY.current = currentY;
-
-    /* Decide gesture mode once direction is clear (> 10 px) */
-    if (touchMode.current === null && Math.abs(totalDelta) > 10) {
-      const idx  = activeIndexRef.current;
-      const down = totalDelta > 0;
-      const canAdvance = (down && idx < courses.length - 1) || (!down && idx > 0);
-      touchMode.current = canAdvance ? 'sequencer' : 'passthrough';
-    }
-
-    if (touchMode.current === 'sequencer') {
-      /* Swallow touch — card flip happens on touchend */
-      e.preventDefault();
-    } else if (touchMode.current === 'passthrough') {
-      /*
-       * touchAction:'none' stops the browser from scrolling automatically.
-       * We manually relay the finger movement to the window so the page
-       * continues scrolling past this section at both ends.
-       */
-      window.scrollBy({ top: moveDelta, behavior: 'instant' });
-    }
-  }, []);
-
-  const handleTouchEnd = useCallback((e) => {
-    if (touchStartY.current === null) return;
-    const delta = touchStartY.current - e.changedTouches[0].clientY;
-    const mode  = touchMode.current;
-    touchStartY.current = null;
-    touchLastY.current  = null;
-    touchMode.current   = null;
-
-    if (mode !== 'sequencer' || animatingRef.current) return;
-    if (delta >  TOUCH_THRESHOLD) advance(1);
-    if (delta < -TOUCH_THRESHOLD) advance(-1);
-  }, [advance]);
-
-  /* ── Attach listeners once ── */
-  const wrapperRef = useRef(null);
 
   useEffect(() => {
-    const el = wrapperRef.current;
+    const el = scrollRef.current;
     if (!el) return;
-    el.addEventListener('wheel',      handleWheel,      { passive: false });
-    el.addEventListener('touchstart', handleTouchStart, { passive: true  });
-    /* non-passive: we call preventDefault() in sequencer mode */
-    el.addEventListener('touchmove',  handleTouchMove,  { passive: false });
-    el.addEventListener('touchend',   handleTouchEnd,   { passive: true  });
+    el.addEventListener('scroll', handleScroll, { passive: true });
     return () => {
-      el.removeEventListener('wheel',      handleWheel);
-      el.removeEventListener('touchstart', handleTouchStart);
-      el.removeEventListener('touchmove',  handleTouchMove);
-      el.removeEventListener('touchend',   handleTouchEnd);
+      el.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) cancelAnimationFrame(rafRef.current);
     };
-  }, [handleWheel, handleTouchStart, handleTouchMove, handleTouchEnd]);
+  }, [handleScroll]);
 
-  const course = courses[activeIndex];
+  /* Programmatic scroll for progress-bar / dot taps */
+  const scrollToIndex = useCallback((idx) => {
+    const el = scrollRef.current;
+    if (!el) return;
+    el.scrollTo({ left: idx * el.offsetWidth, behavior: 'smooth' });
+  }, []);
+
+  const activeCourse = courses[activeIndex];
 
   return (
-    <div ref={wrapperRef} className="relative select-none" style={{ touchAction: 'none' }}>
-      {/* ── Card area with AnimatePresence ── */}
-      <div
-        className="relative overflow-hidden rounded-2xl"
-        style={{ minHeight: '420px' }}
-      >
-        <AnimatePresence
-          custom={direction}
-          initial={false}
-          onExitComplete={() => setAnimating(false)}
-        >
-          <motion.div
-            key={activeIndex}
-            custom={direction}
-            variants={slideVariants}
-            initial="enter"
-            animate="center"
-            exit="exit"
-            className="absolute inset-0"
+    <div className="relative">
+
+      {/* ── Instagram Stories-style progress bars ── */}
+      <div className="flex gap-1.5 mb-4 px-0.5" role="tablist" aria-label="Course pages">
+        {courses.map((c, i) => (
+          <button
+            key={i}
+            role="tab"
+            aria-selected={i === activeIndex}
+            aria-label={`Go to ${c.title}`}
+            onClick={() => scrollToIndex(i)}
+            className="flex-1 h-[3px] rounded-full relative overflow-hidden"
+            style={{ background: 'rgba(255,255,255,0.12)' }}
           >
-            <CourseCard course={course} index={activeIndex} isCarousel />
-          </motion.div>
-        </AnimatePresence>
-      </div>
-
-      {/* ── Progress indicator bar ── */}
-      <div className="mt-5 flex items-center gap-3 px-1">
-        {/* Prev button */}
-        <button
-          onClick={() => !animating && advance(-1)}
-          disabled={activeIndex === 0}
-          aria-label="Previous course"
-          className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
-            activeIndex === 0
-              ? 'border-white/10 text-white/20 cursor-default'
-              : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white active:scale-95'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-          </svg>
-        </button>
-
-        {/* Dot pills */}
-        <div className="flex-1 flex items-center justify-center gap-1.5" role="tablist" aria-label="Course pages">
-          {courses.map((_, i) => (
-            <button
-              key={i}
-              role="tab"
-              aria-selected={i === activeIndex}
-              aria-label={`Go to course ${i + 1}`}
-              onClick={() => {
-                if (animating || i === activeIndex) return;
-                setDirection(i > activeIndex ? 1 : -1);
-                setAnimating(true);
-                setActiveIndex(i);
-              }}
-              className="rounded-full transition-all duration-300"
+            <span
+              className="absolute inset-y-0 left-0 rounded-full"
               style={{
-                width: i === activeIndex ? '28px' : '8px',
-                height: '8px',
+                width: i < activeIndex ? '100%' : i === activeIndex ? '100%' : '0%',
                 background: i === activeIndex
-                  ? course.labelColor
-                  : 'rgba(255,255,255,0.18)',
-                boxShadow: i === activeIndex ? `0 0 10px ${course.labelColor}88` : 'none',
+                  ? activeCourse.labelColor
+                  : i < activeIndex
+                  ? 'rgba(255,255,255,0.35)'
+                  : 'transparent',
+                boxShadow: i === activeIndex ? `0 0 6px ${activeCourse.labelColor}` : 'none',
+                transition: 'width 0.25s ease, background 0.3s ease, box-shadow 0.3s ease',
               }}
             />
-          ))}
-        </div>
-
-        {/* Next button */}
-        <button
-          onClick={() => !animating && advance(1)}
-          disabled={activeIndex === courses.length - 1}
-          aria-label="Next course"
-          className={`w-10 h-10 rounded-full border flex items-center justify-center transition-all duration-300 flex-shrink-0 ${
-            activeIndex === courses.length - 1
-              ? 'border-white/10 text-white/20 cursor-default'
-              : 'border-white/20 text-white/60 hover:border-white/40 hover:text-white active:scale-95'
-          }`}
-        >
-          <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2} aria-hidden="true">
-            <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-          </svg>
-        </button>
+          </button>
+        ))}
       </div>
 
-      {/* ── Counter label ── */}
-      <p className="mt-3 text-center font-mono text-[10px] uppercase tracking-[0.3em] text-white/30">
-        {String(activeIndex + 1).padStart(2, '0')} / {String(courses.length).padStart(2, '0')}
-      </p>
-
-      {/* ── Scroll hint (only on first card) ── */}
-      {activeIndex === 0 && (
-        <motion.div
-          initial={{ opacity: 0, y: 6 }}
-          animate={{ opacity: 1, y: 0 }}
-          exit={{ opacity: 0 }}
-          transition={{ delay: 1.2, duration: 0.6 }}
-          className="mt-4 flex flex-col items-center gap-1.5"
-          aria-hidden="true"
-        >
-          <span className="font-mono text-[9px] uppercase tracking-[0.35em] text-white/25">Swipe or scroll</span>
-          <motion.div
-            animate={{ y: [0, 4, 0] }}
-            transition={{ duration: 1.4, repeat: Infinity, ease: 'easeInOut' }}
+      {/* ── Native scroll-snap strip ── */}
+      {/*
+        scroll-snap-type: x mandatory  → snaps to each card on release
+        overflow-x: scroll              → native momentum + fling
+        No touchAction override         → page vertical scroll works normally
+        No JS preventDefault anywhere   → zero lag, full speed
+      */}
+      <div
+        ref={scrollRef}
+        role="list"
+        aria-label="Courses carousel"
+        className="flex overflow-x-scroll snap-x snap-mandatory"
+        style={{
+          scrollbarWidth: 'none',
+          msOverflowStyle: 'none',
+          WebkitOverflowScrolling: 'touch',
+          /* Slightly less than full width + right padding = shows peek of next card */
+          gap: 0,
+        }}
+      >
+        {courses.map((course, i) => (
+          <div
+            key={course.title}
+            className="snap-center flex-shrink-0 pr-3 last:pr-0"
+            style={{ width: 'calc(92%)' }}
           >
-            <svg className="w-4 h-4 text-white/20" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={1.5}>
-              <path strokeLinecap="round" strokeLinejoin="round" d="m19.5 8.25-7.5 7.5-7.5-7.5" />
+            <CourseCard course={course} index={i} isCarousel />
+          </div>
+        ))}
+
+        {/* Right padding spacer so the last card can fully snap-center */}
+        <div className="flex-shrink-0" style={{ width: '8%', minWidth: '8%' }} aria-hidden="true" />
+      </div>
+
+      {/* ── Counter + swipe hint ── */}
+      <div className="mt-4 flex items-center justify-between px-1">
+        <p className="font-mono text-[10px] uppercase tracking-[0.3em] text-white/30">
+          {String(activeIndex + 1).padStart(2, '0')} / {String(courses.length).padStart(2, '0')}
+        </p>
+        {activeIndex < courses.length - 1 && (
+          <p className="font-mono text-[10px] uppercase tracking-[0.25em] text-white/25 flex items-center gap-1">
+            swipe
+            <svg className="w-3 h-3" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
             </svg>
-          </motion.div>
-        </motion.div>
-      )}
+          </p>
+        )}
+      </div>
+
     </div>
   );
 }
@@ -497,6 +353,7 @@ export default function Courses() {
 
   return (
     <section id="courses" className="py-16 md:py-24 lg:py-32 relative overflow-hidden" aria-labelledby="courses-heading">
+
       {/* Faint diagonal grid overlay */}
       <div
         className="absolute inset-0 pointer-events-none opacity-[0.03]"
@@ -505,18 +362,21 @@ export default function Courses() {
         }}
         aria-hidden="true"
       />
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6">
 
         {/* Terminal Window Container */}
         <div className="relative border border-border-custom p-5 pb-8 md:p-10 lg:p-12 rounded-xl shadow-[0_0_50px_rgba(37,99,235,0.1)] overflow-hidden">
+
           {/* Terminal Header Bar */}
           <div className="absolute top-0 left-0 w-full h-8 bg-border-custom/50 flex items-center px-4 gap-2" aria-hidden="true">
-            <div className="w-2.5 h-2.5 rounded-full bg-red-500/80"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80"></div>
-            <div className="w-2.5 h-2.5 rounded-full bg-theme-dark/80"></div>
+            <div className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
+            <div className="w-2.5 h-2.5 rounded-full bg-theme-dark/80" />
             <span className="ml-4 font-mono text-[10px] text-text-muted">programs_catalog.exe</span>
           </div>
 
+          {/* Section heading */}
           <div ref={ref} className="text-left mb-8 md:mb-14 pb-5 md:pb-6 mt-8 md:mt-10 border-b border-border-custom relative z-10">
             <motion.span
               initial={{ opacity: 0 }}
@@ -538,17 +398,18 @@ export default function Courses() {
             </motion.h2>
           </div>
 
-          {/* ═══════ MOBILE: Scroll-Driven Sequencer ═══════ */}
-          <div className="md:hidden" aria-label="Courses sequencer">
-            <MobileScrollSequencer />
+          {/* ═══ MOBILE: Instagram-style snap carousel ═══ */}
+          <div className="md:hidden">
+            <MobileCarousel />
           </div>
 
-          {/* ═══════ DESKTOP: Grid Layout ═══════ */}
+          {/* ═══ DESKTOP: Grid ═══ */}
           <div className="hidden md:grid grid-cols-2 lg:grid-cols-3 gap-6" role="list" aria-label="All courses">
             {courses.map((course, index) => (
-              <CourseCard key={course.title} course={course} index={index} isInView={isInView} />
+              <CourseCard key={course.title} course={course} index={index} />
             ))}
           </div>
+
         </div>
       </div>
     </section>
