@@ -122,9 +122,17 @@ export default function Footer() {
           <p className="font-mono text-[10px] text-text-muted uppercase tracking-widest">
             © {new Date().getFullYear()} KALVIYUGAM Academy. All rights reserved.
           </p>
-          <p className="font-mono text-[10px] text-text-muted uppercase tracking-widest">
-            Built with precision & care.
-          </p>
+          <div className="flex items-center gap-6">
+            <Link
+              to="/privacy-policy"
+              className="font-mono text-[10px] text-text-muted uppercase tracking-widest hover:text-text-main transition-colors duration-300"
+            >
+              Privacy Policy
+            </Link>
+            <p className="font-mono text-[10px] text-text-muted uppercase tracking-widest">
+              Built with precision & care.
+            </p>
+          </div>
         </div>
       </div>
     </footer>

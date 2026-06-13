@@ -7,7 +7,7 @@ const ALL_IMAGES = [
   { id: 2, src: '/images/gallery/img-2.jpeg', label: 'Group Study Moments', cat: 'Students', hasPeople: true },
   { id: 3, src: '/images/gallery/img-3.jpeg', label: 'Learning Together', cat: 'Students', hasPeople: false },
   { id: 4, src: '/images/gallery/img-4.jpeg', label: 'Faculty Interaction', cat: 'Students', hasPeople: true },
-  { id: 5, src: '/images/gallery/img-5.jpeg', label: 'Pongal Celebration', cat: 'Events', hasPeople: true },
+  { id: 5, src: '/images/gallery/img-5.jpeg', label: 'One Year Of Learning', cat: 'Events', hasPeople: false },
   { id: 6, src: '/images/gallery/img-6.jpeg', label: 'Student Stories', cat: 'Students', hasPeople: true },
   { id: 7, src: '/images/gallery/img-7.jpeg', label: 'Cake Cutting', cat: 'Events', hasPeople: true },
   { id: 8, src: '/images/gallery/img-8.jpeg', label: 'Campus Moments', cat: 'Events', hasPeople: true },
@@ -18,30 +18,30 @@ const ALL_IMAGES = [
   { id: 13, src: '/images/gallery/img-13.jpeg', label: 'Pongal Ritual', cat: 'Events', hasPeople: true },
   { id: 14, src: '/images/gallery/img-14.jpeg', label: 'Festival Ceremony', cat: 'Events', hasPeople: true },
   { id: 15, src: '/images/gallery/img-15.jpeg', label: 'Prize Distribution', cat: 'Events', hasPeople: true },
-  { id: 16, src: '/images/gallery/img-16.jpeg', label: 'Achievement Ceremony', cat: 'Events', hasPeople: true },
+  { id: 16, src: '/images/gallery/img-16.jpeg', label: 'Achievement Ceremony', cat: 'Events', hasPeople: false },
   { id: 17, src: '/images/gallery/img-17.jpeg', label: 'Study Hall', cat: 'Students', hasPeople: true },
-  { id: 18, src: '/images/gallery/img-18.jpeg', label: 'Mentoring Session', cat: 'Students', hasPeople: false },
+  { id: 18, src: '/images/gallery/img-18.jpeg', label: 'Mentoring Session', cat: 'Events', hasPeople: false },
   { id: 19, src: '/images/gallery/img-19.jpeg', label: 'Campus Life', cat: 'Events', hasPeople: true },
   // { id: 20, src: '/images/gallery/img-20.jpeg', label: 'Faculty Meet', cat: 'Events', hasPeople: true },
   //{ id: 21, src: '/images/gallery/img-21.jpeg', label: 'One-on-One Mentoring', cat: 'Students', hasPeople: true },
   { id: 22, src: '/images/gallery/img-22.jpeg', label: 'Batch Photo', cat: 'Students', hasPeople: true },
   { id: 23, src: '/images/gallery/img-23.jpeg', label: 'Award Ceremony', cat: 'Events', hasPeople: true },
   { id: 24, src: '/images/gallery/img-24.jpeg', label: "Teachers' Day Cake", cat: 'Info', hasPeople: false },
-  { id: 25, src: '/images/gallery/img-25.jpeg', label: 'Achievement Day', cat: 'Events', hasPeople: true },
-  { id: 26, src: '/images/gallery/img-26.jpeg', label: 'Result Celebration', cat: 'Events', hasPeople: true },
-  { id: 27, src: '/images/gallery/img-27.jpeg', label: 'Admission Open', cat: 'Info', hasPeople: false },
-  { id: 28, src: '/images/gallery/img-28.jpeg', label: 'Toppers Group', cat: 'Students', hasPeople: true },
-  { id: 29, src: '/images/gallery/img-29.jpeg', label: 'Star Students', cat: 'Students', hasPeople: true },
+  //{ id: 25, src: '/images/gallery/img-25.jpeg', label: 'Achievement Day', cat: 'Events', hasPeople: true },
+  //{ id: 26, src: '/images/gallery/img-26.jpeg', label: 'Result Celebration', cat: 'Events', hasPeople: true },
+  // { id: 27, src: '/images/gallery/img-27.jpeg', label: 'Admission Open', cat: 'Info', hasPeople: false },
+  //{ id: 28, src: '/images/gallery/img-28.jpeg', label: 'Toppers Group', cat: 'Students', hasPeople: true },
+  //{ id: 29, src: '/images/gallery/img-29.jpeg', label: 'Star Students', cat: 'Students', hasPeople: true },
   { id: 30, src: '/images/gallery/img-30.jpeg', label: 'Result Highlights 2024', cat: 'Info', hasPeople: false },
-  { id: 31, src: '/images/gallery/img-31.jpeg', label: 'Academy Info', cat: 'Info', hasPeople: false },
+  // { id: 31, src: '/images/gallery/img-31.jpeg', label: 'Academy Info', cat: 'Info', hasPeople: false },
   { id: 32, src: '/images/gallery/img-32.jpeg', label: 'Result Highlights 2025', cat: 'Info', hasPeople: false },
   { id: 33, src: '/images/gallery/img-33.jpeg', label: 'Festival Celebration', cat: 'Events', hasPeople: true },
-  { id: 34, src: '/images/gallery/img-34.jpeg', label: 'Special Gathering', cat: 'Events', hasPeople: true },
-  { id: 35, src: '/images/gallery/img-35.jpeg', label: 'Class of 2026', cat: 'Students', hasPeople: true },
+  // { id: 34, src: '/images/gallery/img-34.jpeg', label: 'Special Gathering', cat: 'Events', hasPeople: true },
+  { id: 35, src: '/images/gallery/img-35.jpeg', label: 'Class of 2026', cat: 'Events', hasPeople: false },
   { id: 36, src: '/images/gallery/img-36.jpeg', label: 'Kalviyugam Logo', cat: 'Info', hasPeople: false },
-  { id: 37, src: '/images/gallery/img-37.jpeg', label: 'Year End Gathering', cat: 'Events', hasPeople: true },
-  { id: 38, src: '/images/gallery/img-38.jpeg', label: 'Institute Highlights', cat: 'Events', hasPeople: true },
-  { id: 39, src: '/images/gallery/img-39.jpeg', label: 'Memorable Moments', cat: 'Events', hasPeople: true },
+  { id: 37, src: '/images/gallery/img-37.jpeg', label: 'Year End Gathering', cat: 'Events', hasPeople: false },
+  { id: 38, src: '/images/gallery/img-38.jpeg', label: 'Institute Highlights', cat: 'Events', hasPeople: false },
+  { id: 39, src: '/images/gallery/img-39.jpeg', label: 'Memorable Moments', cat: 'Events', hasPeople: false },
 ];
 
 // Hero slider: people first (Students), then Events
@@ -163,7 +163,7 @@ function HeroSlider() {
             onClick={() => go(-1)}
             whileHover={{ opacity: 0.62 }}
             style={{
-              flex: '1.3', height: '100%',
+              flex: '0.65', height: '100%',
               cursor: 'pointer', opacity: 0.38,
               overflow: 'hidden',
               borderRadius: 'clamp(8px, 1.5vw, 14px)',
@@ -188,7 +188,7 @@ function HeroSlider() {
 
           {/* Center card — featured, AnimatePresence direction-aware */}
           <div style={{
-            flex: '2.5', height: '100%',
+            flex: '4', height: '100%',
             position: 'relative', overflow: 'hidden',
             borderRadius: 'clamp(12px, 2vw, 20px)',
             boxShadow: '0 20px 60px rgba(0,0,0,0.72), 0 0 0 1px rgba(0,212,255,0.13)',
@@ -256,7 +256,7 @@ function HeroSlider() {
             onClick={() => go(1)}
             whileHover={{ opacity: 0.62 }}
             style={{
-              flex: '1.3', height: '100%',
+              flex: '0.65', height: '100%',
               cursor: 'pointer', opacity: 0.38,
               overflow: 'hidden',
               borderRadius: 'clamp(8px, 1.5vw, 14px)',

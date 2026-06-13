@@ -114,7 +114,7 @@ export default function Navbar() {
       <nav
         className={`fixed top-0 left-0 right-0 z-[100] transition-all duration-400 ${
           scrolled
-            ? 'py-3 bg-[#050B14]/90 backdrop-blur-xl border-b border-white/[0.06]'
+            ? 'py-3 bg-[#050B14]/95 backdrop-blur-sm border-b border-white/[0.06]'
             : 'py-5 bg-transparent'
         }`}
       >

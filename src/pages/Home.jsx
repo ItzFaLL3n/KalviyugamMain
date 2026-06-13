@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { useLenis } from '../components/SmoothScroll';
 import Hero from '../sections/Hero';
 import Courses from '../sections/Courses';
 import Results from '../sections/Results';
@@ -10,6 +11,7 @@ import Contact from '../sections/Contact';
 
 export default function Home() {
   const location = useLocation();
+  const lenisRef = useLenis();
 
   /* ── Scroll to a section when navigated from another page ── */
   useEffect(() => {
@@ -18,10 +20,18 @@ export default function Home() {
     // Wait for PageTransition animation (600ms) + paint buffer
     const timer = setTimeout(() => {
       const el = document.getElementById(target);
-      if (el) el.scrollIntoView({ behavior: 'smooth' });
+      if (!el) return;
+      const lenis = lenisRef?.current;
+      if (lenis) {
+        // Use lenis.scrollTo so Lenis's internal targetScroll is updated —
+        // native scrollIntoView gets overridden by Lenis's RAF loop
+        lenis.scrollTo(el, { offset: -80 });
+      } else {
+        el.scrollIntoView({ behavior: 'smooth' });
+      }
     }, 700);
     return () => clearTimeout(timer);
-  }, [location.state]); // re-runs whenever router state changes
+  }, [location.state, lenisRef]);
 
   useEffect(() => {
     // Select all sections with an id
