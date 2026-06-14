@@ -8,7 +8,7 @@ const SMOKE_BODY = `
 
 float rnd(vec2 p){p=fract(p*vec2(12.9898,78.233));p+=dot(p,p+34.56);return fract(p.x*p.y);}
 float noise(vec2 p){vec2 i=floor(p),f=fract(p),u=f*f*(3.-2.*f);return mix(mix(rnd(i),rnd(i+vec2(1,0)),u.x),mix(rnd(i+vec2(0,1)),rnd(i+1.),u.x),u.y);}
-float fbm(vec2 p){float t=.0,a=1.;for(int i=0;i<3;i++){t+=a*noise(p);p*=mat2(1,-1.2,.2,1.2)*2.;a*=.5;}return t;}
+float fbm(vec2 p){float t=.0,a=1.;for(int i=0;i<2;i++){t+=a*noise(p);p*=mat2(1,-1.2,.2,1.2)*2.;a*=.5;}return t;}
 
 void main(){
   vec2 uv=(FC-.5*R)/R.y;
@@ -73,7 +73,8 @@ class Renderer {
     this.gl = null;
 
     // Try WebGL2 first, fall back to WebGL1
-    const opts = { antialias: false, alpha: false };
+    // powerPreference: 'high-performance' forces discrete GPU on multi-GPU systems (critical for Edge)
+    const opts = { antialias: false, alpha: false, powerPreference: 'high-performance' };
     let gl = canvas.getContext('webgl2', opts);
     if (gl) {
       this.gl = gl;
@@ -203,8 +204,8 @@ export const SmokeBackground = ({ smokeColor = '#2563EB' }) => {
     let raf;
     let isVisible = true;
     let lastFrame = 0;
-    // Mobile: cap at 30fps to free up GPU for scroll
-    const minInterval = isMobile ? 33 : 0;
+    // Cap at 30fps — background smoke doesn't need 60fps, halves GPU cost on all browsers
+    const minInterval = 33;
 
     const loop = (now) => {
       if (isVisible) {
