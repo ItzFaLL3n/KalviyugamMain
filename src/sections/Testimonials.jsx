@@ -1,48 +1,50 @@
 import { useState, useRef, useEffect } from 'react';
 import { motion, useInView } from 'framer-motion';
-import { Star, ChevronLeft, ChevronRight, Hash } from 'lucide-react';
+import { ChevronLeft, ChevronRight, Hash, GraduationCap, Users } from 'lucide-react';
 import { SmokeBackground } from '../components/ui/spooky-smoke-animation';
 
 const testimonials = [
   {
-    name: 'Karthikeyan Subramani',
-    course: 'NEET Repeater Batch',
-    result: 'Scored 685/720 in NEET',
-    quote: 'I missed the cutoff in my first attempt, but Kalviyugam Academy changed my entire approach. The intensive daily mock tests and personalized doubt-clearing sessions gave me the confidence to succeed. Their biology faculty is truly outstanding.',
-    avatar: '/images/avatars/karthikeyan.png',
-    tags: ['NEET', 'Repeater', 'Mock Exams']
+    name: 'Mithun',
+    type: 'parent',
+    result: 'Visible Academic Growth',
+    quote: 'My child is learning a lot and getting better marks compared to previous year marks. The teachers are very kind and helpful.',
+    tags: ['Better Marks', 'Kind Teachers']
   },
   {
-    name: 'Aishwarya Lakshmi',
-    course: 'Higher Secondary (+2) & JEE',
-    result: 'State Top 10 & Cleared JEE',
-    quote: 'The teachers at Kalviyugam didn\'t just force me to memorize physics formulas; they made me visualize the concepts. That foundational clarity is exactly why I could tackle the toughest JEE problems without panicking.',
-    avatar: '/images/avatars/aishwarya.png',
-    tags: ['JEE Mains', 'State Rank', 'Concept Focus']
+    name: 'Shakthivel',
+    type: 'student',
+    result: 'Improved Maths Score',
+    quote: 'The study environment is calm and comfortable, making it easier to focus on studies. Regular tests and practice sessions help improve knowledge and build confidence. Thank you Raagul sir for helping me get better marks in maths!',
+    tags: ['Regular Tests', 'Maths']
   },
   {
-    name: 'Surya Narayanan',
-    course: '10th Board Excellence',
-    result: 'Perfect 500/500 Marks',
-    quote: 'The transition to 10th grade was intimidating, but the small batch sizes here meant I received incredible individual attention. They mapped out an exact study schedule that was completely stress-free yet highly effective.',
-    avatar: '/images/avatars/surya.png',
-    tags: ['10th Board', 'Mentorship', 'Small Batch']
+    name: 'Tharun',
+    type: 'parent',
+    result: 'Better Discipline & Studies',
+    quote: 'My kid is hyperactive. We changed many tuitions because of his naughtiness, but here the teachers take care of him politely and shaped him better. I\'m very happy that he is improving in studies as well as in discipline.',
+    tags: ['Discipline', 'Personal Care']
   },
   {
-    name: 'Sanjay Krishnan',
-    course: 'NEET Foundation (11th & 12th)',
-    result: '1st Attempt Medical Seat',
-    quote: 'Balancing state board exams and NEET prep seemed impossible until I joined here. Their integrated curriculum perfectly aligns the state syllabus with competitive exam patterns. It saved me countless hours of duplicate studying.',
-    avatar: '/images/avatars/sanjay.png',
-    tags: ['Foundation', 'Time Management', 'NEET']
+    name: 'Shruthi',
+    type: 'parent',
+    result: '470 / 500 in Revision Exams',
+    quote: 'My daughter is studying 10th standard and I\'m very happy to say that she has scored 470 out of 500 in her revision exams. I\'m deeply thankful to Kalviyugam for making this achievement possible.',
+    tags: ['10th Standard', 'Top Score']
   },
   {
-    name: 'Divya Bharathi',
-    course: 'Intensive Crash Course',
-    result: 'Top Tier Engineering Admission',
-    quote: 'I attended their 3-month intensive crash course. The analytics dashboard they provided to track my weak spots was a literal game changer. I knew exactly which specific chapters to revise instead of blindly reading every textbook.',
-    avatar: '/images/avatars/divya.png',
-    tags: ['Crash Course', 'Analytics', 'Targeted Prep']
+    name: 'Thirumurugan',
+    type: 'student',
+    result: 'Concepts Made Crystal Clear',
+    quote: 'The teachers use simple, relatable examples to explain concepts. This makes learning more interesting and effective. Thank you teachers for your constant support and guidance.',
+    tags: ['Concept Clarity', 'Supportive Faculty']
+  },
+  {
+    name: 'Guna',
+    type: 'parent',
+    result: 'Visibly Better Marks',
+    quote: 'Honestly, this tuition is 100 out of 100 — not just for the sake of a review, I\'m saying this from the bottom of my heart. After joining my son in Kalviyugam I can visibly see the difference in his marks. I\'m feeling proud and happy for him.',
+    tags: ['Highly Recommended', 'Proud Moment']
   }
 ];
 
@@ -144,17 +146,32 @@ export default function Testimonials() {
                   pointerEvents: isActive ? 'auto' : 'none' // Only active card is interactive
                 }}
               >
-                {/* Top Left Tag */}
-                <div className="flex items-center gap-2 mb-8">
-                  <Hash className="w-4 h-4 text-theme-dark/70" />
-                  <span className="text-sm text-text-muted font-mono">{t.course}</span>
-                </div>
-
-                {/* Avatar & Name */}
-                <div className="flex items-center gap-4 mb-8">
-                  <img src={t.avatar} alt={t.name} className="w-14 h-14 rounded-full border border-border-custom object-cover" />
-                  <div>
-                    <h4 className="text-text-main font-bold text-lg leading-tight">{t.name}</h4>
+                {/* Avatar & Name Row */}
+                <div className="flex items-center gap-4 mb-6">
+                  {/* Initials Circle */}
+                  <div
+                    className="w-14 h-14 rounded-full flex items-center justify-center shrink-0 text-white font-bold text-xl"
+                    style={{ background: t.type === 'parent'
+                      ? 'linear-gradient(135deg, #f59e0b, #d97706)'
+                      : 'linear-gradient(135deg, #00D4FF, #0ea5e9)' }}
+                  >
+                    {t.name.charAt(0).toUpperCase()}
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                      <h4 className="text-text-main font-bold text-lg leading-tight">{t.name}</h4>
+                      {/* Role Badge */}
+                      <span
+                        className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-semibold uppercase tracking-wider"
+                        style={t.type === 'parent'
+                          ? { background: 'rgba(245,158,11,0.15)', color: '#f59e0b', border: '1px solid rgba(245,158,11,0.3)' }
+                          : { background: 'rgba(0,212,255,0.12)', color: '#00D4FF', border: '1px solid rgba(0,212,255,0.25)' }}
+                      >
+                        {t.type === 'parent'
+                          ? <><Users className="w-2.5 h-2.5" /> Parent</>
+                          : <><GraduationCap className="w-2.5 h-2.5" /> Student</>}
+                      </span>
+                    </div>
                     <p className="text-text-muted text-xs font-mono uppercase tracking-wider mt-1">{t.result}</p>
                   </div>
                 </div>
