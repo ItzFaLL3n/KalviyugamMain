@@ -51,9 +51,6 @@ export default function Hero() {
       <div className="hidden md:block absolute bottom-32 right-4 md:right-8 lg:right-24 translate-x-1/2 translate-y-1/2 text-text-muted text-xs z-10 pointer-events-none">+</div>
 
       {/* Corner-Pinned Metadata */}
-      <div className="hidden md:block absolute top-8 left-8 lg:left-12 font-mono text-[10px] text-text-muted tracking-widest uppercase z-10">
-        SYS.REQ // KALVIYUGAM_ACADEMY
-      </div>
       <div className="hidden md:block absolute top-8 right-4 md:right-8 lg:right-12 font-mono text-[10px] text-text-muted tracking-widest uppercase z-10 text-right">
         LOCAL TIME // {new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit' })} IST
       </div>

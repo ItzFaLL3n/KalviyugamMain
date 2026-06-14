@@ -121,8 +121,13 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-6 flex items-center justify-between gap-8">
 
           {/* Logo */}
-          <Link to="/" onClick={handleHomeClick} className="flex-shrink-0">
-            <span className="text-xl md:text-2xl font-black font-heading tracking-wide text-theme-dark">
+          <Link to="/" onClick={handleHomeClick} className="flex-shrink-0 flex items-center gap-3 group">
+            <img 
+              src="/images/logo.png" 
+              alt="KALVIYUGAM Logo" 
+              className="w-12 h-12 object-contain transition-all duration-300 group-hover:scale-110 group-hover:rotate-6"
+            />
+            <span className="text-xl md:text-2xl font-black font-heading tracking-wide text-theme-dark group-hover:text-white transition-colors duration-300">
               KALVIYUGAM
             </span>
           </Link>

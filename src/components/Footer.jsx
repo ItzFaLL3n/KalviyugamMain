@@ -55,9 +55,16 @@ export default function Footer() {
         <div className="grid grid-cols-1 md:grid-cols-3 gap-24">
           {/* Brand */}
           <div className="md:col-span-1">
-            <h3 className="text-3xl font-bold font-heading mb-6 tracking-wide text-text-main">
-              KALVIYUGAM
-            </h3>
+            <div className="flex items-center gap-4 mb-6">
+              <img 
+                src="/images/logo.png" 
+                alt="KALVIYUGAM Logo" 
+                className="w-16 h-16 object-contain transition-transform duration-500 hover:scale-110"
+              />
+              <h3 className="text-3xl font-bold font-heading tracking-wide text-text-main">
+                KALVIYUGAM
+              </h3>
+            </div>
             <p className="font-mono text-xs text-text-muted leading-loose max-w-xs uppercase tracking-wider">
               Shaping future toppers with precision coaching.
             </p>
