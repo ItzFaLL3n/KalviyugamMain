@@ -6,7 +6,7 @@ const navLinks = [
   { label: 'Home',         href: '/',             isRoute: true,  sectionId: null        },
   { label: 'Courses',      href: '/#courses',      isRoute: false, sectionId: 'courses'   },
   { label: 'Results',      href: '/#results',      isRoute: false, sectionId: 'results'   },
-  { label: 'Why',          href: '/#stand-out',    isRoute: false, sectionId: 'stand-out' },
+  { label: 'Why Us',       href: '/#stand-out',    isRoute: false, sectionId: 'stand-out' },
   { label: 'Testimonials', href: '/#testimonials', isRoute: false, sectionId: 'testimonials' },
   { label: 'Gallery',      href: '/gallery',        isRoute: true,  sectionId: null        },
   { label: 'Contact',      href: '/#contact',      isRoute: false, sectionId: 'contact'   },

@@ -58,7 +58,7 @@ export default function Contact() {
             transition={{ duration: 0.6 }}
             className="font-mono text-[10px] md:text-xs uppercase tracking-[0.4em] text-text-muted mb-8 block"
           >
-            04 // Contact
+            05 // Contact
           </motion.span>
           <motion.h2
             initial={{ opacity: 0, y: 30 }}

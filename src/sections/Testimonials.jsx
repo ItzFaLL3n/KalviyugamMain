@@ -53,6 +53,7 @@ export default function Testimonials() {
   const ref = useRef(null);
   const isInView = useInView(ref, { once: true, margin: '-100px' });
   const [isMobile, setIsMobile] = useState(false);
+  const [isPaused, setIsPaused] = useState(false);
 
   useEffect(() => {
     const handleResize = () => setIsMobile(window.innerWidth < 768);
@@ -61,14 +62,14 @@ export default function Testimonials() {
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  // Auto-play loop
+  // Auto-play loop — paused on hover
   useEffect(() => {
-    if (!isInView) return;
+    if (!isInView || isPaused) return;
     const interval = setInterval(() => {
       setActiveIndex((prev) => (prev + 1) % testimonials.length);
     }, 4000);
     return () => clearInterval(interval);
-  }, [isInView]);
+  }, [isInView, isPaused]);
 
   const next = () => setActiveIndex((prev) => (prev + 1) % testimonials.length);
   const prev = () => setActiveIndex((prev) => (prev - 1 + testimonials.length) % testimonials.length);
@@ -120,7 +121,11 @@ export default function Testimonials() {
         {/* Avatars Row Removed */}
 
         {/* Carousel Area */}
-        <div className="relative w-full h-[550px] md:h-[480px] flex justify-center items-center">
+        <div
+          className="relative w-full h-[550px] md:h-[480px] flex justify-center items-center"
+          onMouseEnter={() => setIsPaused(true)}
+          onMouseLeave={() => setIsPaused(false)}
+        >
           {testimonials.map((t, index) => {
             const diff = index - activeIndex;
             const offset = diff * (isMobile ? 105 : 110);
@@ -200,12 +205,14 @@ export default function Testimonials() {
         <div className="flex gap-4 mt-8 md:mt-12">
           <button
             onClick={prev}
+            aria-label="Previous testimonial"
             className="w-12 h-12 rounded-xl bg-white/5 border border-border-custom flex items-center justify-center text-text-main hover:bg-white/10 hover:border-theme-dark/50 hover:text-theme-dark transition-all group"
           >
             <ChevronLeft className="w-6 h-6 group-hover:-translate-x-1 transition-transform" />
           </button>
           <button
             onClick={next}
+            aria-label="Next testimonial"
             className="w-12 h-12 rounded-xl bg-white/5 border border-border-custom flex items-center justify-center text-text-main hover:bg-white/10 hover:border-theme-dark/50 hover:text-theme-dark transition-all group"
           >
             <ChevronRight className="w-6 h-6 group-hover:translate-x-1 transition-transform" />

@@ -1,13 +1,13 @@
-import { Link } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { SmokeBackground } from './ui/spooky-smoke-animation';
 
 const footerLinks = [
   { label: 'Home', href: '/' },
   { label: 'Gallery', href: '/gallery' },
   { label: 'Courses', href: '/#courses' },
-  { label: 'Programs', href: '/#programs' },
   { label: 'Why We Stand Out', href: '/#stand-out' },
   { label: 'Contact', href: '/#contact' },
+  { label: 'Privacy Policy', href: '/privacy-policy' },
 ];
 
 const socialLinks = [
@@ -22,7 +22,7 @@ const socialLinks = [
   },
   {
     label: 'Instagram',
-    href: '#',
+    href: 'https://www.instagram.com/kalviyugam_academy/',
     icon: (
       <svg viewBox="0 0 24 24" fill="currentColor" className="w-5 h-5">
         <path d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zm0-2.163c-3.259 0-3.667.014-4.947.072-4.358.2-6.78 2.618-6.98 6.98-.059 1.281-.073 1.689-.073 4.948 0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98 1.281.058 1.689.072 4.948.072 3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98-1.281-.059-1.69-.073-4.949-.073zm0 5.838c-3.403 0-6.162 2.759-6.162 6.162s2.759 6.163 6.162 6.163 6.162-2.759 6.162-6.163c0-3.403-2.759-6.162-6.162-6.162zm0 10.162c-2.209 0-4-1.79-4-4 0-2.209 1.791-4 4-4s4 1.791 4 4c0 2.21-1.791 4-4 4zm6.406-11.845c-.796 0-1.441.645-1.441 1.44s.645 1.44 1.441 1.44c.795 0 1.439-.645 1.439-1.44s-.644-1.44-1.439-1.44z"/>
@@ -41,6 +41,28 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const location = useLocation();
+  const navigate  = useNavigate();
+
+  // Clicking "Home" while already on "/" should scroll to top, not no-op
+  const handleHomeClick = (e) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  };
+
+  // Footer hash links — navigate to home first if on another page
+  const handleHashClick = (e, sectionId) => {
+    if (location.pathname === '/') {
+      e.preventDefault();
+      document.getElementById(sectionId)?.scrollIntoView({ behavior: 'smooth' });
+    } else {
+      e.preventDefault();
+      navigate('/', { state: { scrollTo: sectionId } });
+    }
+  };
+
   return (
     <footer className="border-t border-border-custom relative overflow-hidden bg-theme-main">
       {/* Isolated Smoke Background */}
@@ -76,25 +98,35 @@ export default function Footer() {
               System Links
             </h4>
             <ul className="space-y-4">
-              {footerLinks.map((link) => (
-                <li key={link.label}>
-                  {link.href.startsWith('/') && !link.href.includes('#') ? (
-                    <Link
-                      to={link.href}
-                      className="font-mono text-xs uppercase tracking-widest text-text-muted hover:text-text-main transition-colors duration-300"
-                    >
-                      {link.label}
-                    </Link>
-                  ) : (
+              {footerLinks.map((link) => {
+                // Pure route links (no hash)
+                if (link.href.startsWith('/') && !link.href.includes('#')) {
+                  return (
+                    <li key={link.label}>
+                      <Link
+                        to={link.href}
+                        onClick={link.href === '/' ? handleHomeClick : undefined}
+                        className="font-mono text-xs uppercase tracking-widest text-text-muted hover:text-text-main transition-colors duration-300"
+                      >
+                        {link.label}
+                      </Link>
+                    </li>
+                  );
+                }
+                // Hash links — extract sectionId from href
+                const sectionId = link.href.split('#')[1];
+                return (
+                  <li key={link.label}>
                     <a
                       href={link.href}
+                      onClick={(e) => handleHashClick(e, sectionId)}
                       className="font-mono text-xs uppercase tracking-widest text-text-muted hover:text-text-main transition-colors duration-300"
                     >
                       {link.label}
                     </a>
-                  )}
-                </li>
-              ))}
+                  </li>
+                );
+              })}
             </ul>
           </div>
 

@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { gsap } from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
@@ -10,9 +10,15 @@ gsap.registerPlugin(ScrollTrigger);
 export default function Hero() {
   const heroRef = useRef(null);
 
+  // Live clock — updates every 60 s so LOCAL TIME is never stale
+  const [time, setTime] = useState(
+    () => new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit' })
+  );
   useEffect(() => {
-    const ctx = gsap.context(() => { }, heroRef);
-    return () => ctx.revert();
+    const tick = setInterval(() => {
+      setTime(new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit' }));
+    }, 60_000);
+    return () => clearInterval(tick);
   }, []);
 
   const scrollToContact = () => {
@@ -52,7 +58,7 @@ export default function Hero() {
 
       {/* Corner-Pinned Metadata */}
       <div className="hidden md:block absolute top-8 right-4 md:right-8 lg:right-12 font-mono text-[10px] text-text-muted tracking-widest uppercase z-10 text-right">
-        LOCAL TIME // {new Date().toLocaleTimeString('en-US', { timeZone: 'Asia/Kolkata', hour12: false, hour: '2-digit', minute: '2-digit' })} IST
+        LOCAL TIME // {time} IST
       </div>
       <div className="hidden md:block absolute bottom-12 left-4 md:left-8 lg:left-12 font-mono text-[10px] text-text-muted tracking-widest uppercase z-10">
         <div className="flex flex-col gap-1">
