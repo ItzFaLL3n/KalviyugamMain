@@ -19,6 +19,7 @@ export default function Contact() {
 
   const [form, setForm] = useState({ name: '', phone: '', requirements: '' });
   const [error, setError] = useState('');
+  const [submitting, setSubmitting] = useState(false);
 
   const handleChange = (e) => {
     setError('');
@@ -40,10 +41,12 @@ export default function Contact() {
       return;
     }
     setError('');
+    setSubmitting(true);
     const opened = window.open(buildWhatsAppUrl(form), '_blank', 'noopener,noreferrer');
     if (!opened) {
       setError('Popup was blocked. Please allow popups and try again, or message us directly on WhatsApp.');
     }
+    setTimeout(() => setSubmitting(false), 2000);
   };
 
   return (
@@ -157,9 +160,10 @@ export default function Contact() {
             <div className="pt-2">
               <button
                 type="submit"
-                className="w-full md:w-auto px-10 py-5 bg-gradient-to-r from-theme-mid to-theme-dark text-white font-heading font-bold text-base tracking-widest uppercase rounded-sm hover:shadow-[0_0_32px_rgba(0,212,255,0.35)] transition-all duration-300 active:scale-[0.98]"
+                disabled={submitting}
+                className="w-full md:w-auto px-10 py-5 bg-gradient-to-r from-theme-mid to-theme-dark text-white font-heading font-bold text-base tracking-widest uppercase rounded-sm hover:shadow-[0_0_32px_rgba(0,212,255,0.35)] transition-all duration-300 active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
               >
-                Apply Now
+                {submitting ? 'Opening…' : 'Apply Now'}
               </button>
               <p className="mt-3 text-[10px] font-mono uppercase tracking-[0.25em] text-text-muted">
                 We will get back to you soon !!

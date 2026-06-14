@@ -23,8 +23,8 @@ export async function submitContactForm({ name, phone, message }) {
     });
     return { success: true, id: docRef.id };
   } catch (error) {
-    console.error('Error submitting contact form:', error);
-    return { success: false, error: error.message };
+    if (import.meta.env.DEV) console.error('Contact form error:', error);
+    return { success: false, error: 'Submission failed. Please try again.' };
   }
 }
 

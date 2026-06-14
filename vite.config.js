@@ -9,11 +9,12 @@ export default defineConfig({
     chunkSizeWarningLimit: 600,
     rollupOptions: {
       output: {
-        manualChunks: {
-          'vendor-react':   ['react', 'react-dom', 'react-router-dom'],
-          'vendor-motion':  ['framer-motion'],
-          'vendor-gsap':    ['gsap'],
-          'vendor-three':   ['three', '@react-three/fiber', '@react-three/drei'],
+        manualChunks(id) {
+          if (!id.includes('node_modules')) return;
+          if (id.includes('react') || id.includes('react-dom') || id.includes('react-router')) return 'vendor-react';
+          if (id.includes('framer-motion')) return 'vendor-motion';
+          if (id.includes('gsap')) return 'vendor-gsap';
+          if (id.includes('three') || id.includes('@react-three')) return 'vendor-three';
         },
       },
     },
