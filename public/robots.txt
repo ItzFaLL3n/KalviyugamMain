@@ -1,4 +1,4 @@
 User-agent: *
 Allow: /
 
-Sitemap: https://kalviyugam.in/sitemap.xml
+Sitemap: https://www.kalviyugam.in/sitemap.xml
